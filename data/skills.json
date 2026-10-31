@@ -1,0 +1,135 @@
+{
+  "schema": 1,
+  "comment": "12 skills. Each has its own sound id (spec section 4). `effect` is interpreted by scripts/skills/skill_manager.gd.",
+  "equipped_slots": 3,
+  "skills": {
+    "dash": {
+      "name_key": "skill_dash",
+      "desc_key": "skill_dash_desc",
+      "cooldown": 1.2,
+      "duration": 0.18,
+      "effect": "dash",
+      "power": 640.0,
+      "sfx": "skill_dash",
+      "unlock": "start"
+    },
+    "light_burst": {
+      "name_key": "skill_light_burst",
+      "desc_key": "skill_light_burst_desc",
+      "cooldown": 6.0,
+      "duration": 0.3,
+      "effect": "area_damage",
+      "power": 16.0,
+      "radius": 130.0,
+      "sfx": "skill_light_burst",
+      "unlock": "start"
+    },
+    "shield": {
+      "name_key": "skill_shield",
+      "desc_key": "skill_shield_desc",
+      "cooldown": 12.0,
+      "duration": 6.0,
+      "effect": "shield",
+      "power": 30.0,
+      "sfx": "skill_shield_on",
+      "break_sfx": "skill_shield_break",
+      "unlock": "world_1"
+    },
+    "chain_lightning": {
+      "name_key": "skill_chain_lightning",
+      "desc_key": "skill_chain_lightning_desc",
+      "cooldown": 7.5,
+      "duration": 0.4,
+      "effect": "chain_damage",
+      "power": 12.0,
+      "chains": 3,
+      "radius": 220.0,
+      "sfx": "skill_chain_lightning",
+      "unlock": "world_2"
+    },
+    "time_slow": {
+      "name_key": "skill_time_slow",
+      "desc_key": "skill_time_slow_desc",
+      "cooldown": 14.0,
+      "duration": 3.5,
+      "effect": "time_scale",
+      "power": 0.45,
+      "sfx": "skill_time_slow_in",
+      "end_sfx": "skill_time_slow_out",
+      "unlock": "world_3"
+    },
+    "plush_friend": {
+      "name_key": "skill_plush_friend",
+      "desc_key": "skill_plush_friend_desc",
+      "cooldown": 15.0,
+      "duration": 8.0,
+      "effect": "summon",
+      "power": 6.0,
+      "sfx": "skill_plush_friend",
+      "unlock": "world_3"
+    },
+    "fire_trail": {
+      "name_key": "skill_fire_trail",
+      "desc_key": "skill_fire_trail_desc",
+      "cooldown": 9.0,
+      "duration": 4.0,
+      "effect": "trail_damage",
+      "power": 5.0,
+      "sfx": "skill_fire_trail",
+      "unlock": "world_4"
+    },
+    "attract": {
+      "name_key": "skill_attract",
+      "desc_key": "skill_attract_desc",
+      "cooldown": 10.0,
+      "duration": 1.2,
+      "effect": "pull_shards",
+      "power": 340.0,
+      "radius": 360.0,
+      "sfx": "skill_attract",
+      "unlock": "world_4"
+    },
+    "invisibility": {
+      "name_key": "skill_invisibility",
+      "desc_key": "skill_invisibility_desc",
+      "cooldown": 16.0,
+      "duration": 4.0,
+      "effect": "stealth",
+      "power": 0.15,
+      "sfx": "skill_invisibility",
+      "unlock": "world_5"
+    },
+    "heal": {
+      "name_key": "skill_heal",
+      "desc_key": "skill_heal_desc",
+      "cooldown": 18.0,
+      "duration": 0.5,
+      "effect": "heal",
+      "power": 25.0,
+      "sfx": "skill_heal",
+      "unlock": "world_5"
+    },
+    "star_rain": {
+      "name_key": "skill_star_rain",
+      "desc_key": "skill_star_rain_desc",
+      "cooldown": 11.0,
+      "duration": 2.0,
+      "effect": "rain_damage",
+      "power": 7.0,
+      "radius": 260.0,
+      "sfx": "skill_star_rain",
+      "unlock": "world_6"
+    },
+    "dawn": {
+      "name_key": "skill_dawn",
+      "desc_key": "skill_dawn_desc",
+      "cooldown": 45.0,
+      "duration": 2.5,
+      "effect": "ultimate",
+      "power": 60.0,
+      "radius": 420.0,
+      "sfx": "skill_dawn",
+      "unlock": "world_8"
+    }
+  }
+}

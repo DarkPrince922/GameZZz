@@ -1,0 +1,79 @@
+{
+  "schema": 1,
+  "comment": "World registry. `implemented` is honest: only world 1 ships levels so far (BACKLOG.md tracks the rest).",
+  "worlds": {
+    "1": {
+      "name_key": "world_1",
+      "subtitle_key": "world_1_sub",
+      "music": "music_world_1",
+      "ambient": "amb_world_1",
+      "levels": ["world1_level1", "world1_level2", "world1_level3", "world1_level4"],
+      "boss": "bed_monster",
+      "boss_level": "world1_boss",
+      "implemented": true
+    },
+    "2": {
+      "name_key": "world_2",
+      "subtitle_key": "world_2_sub",
+      "music": "music_world_2",
+      "ambient": "amb_world_2",
+      "levels": [],
+      "boss": "forest_raven",
+      "implemented": false
+    },
+    "3": {
+      "name_key": "world_3",
+      "subtitle_key": "world_3_sub",
+      "music": "music_world_3",
+      "ambient": "amb_world_3",
+      "levels": [],
+      "boss": "ghost_nanny",
+      "implemented": false
+    },
+    "4": {
+      "name_key": "world_4",
+      "subtitle_key": "world_4_sub",
+      "music": "music_world_4",
+      "ambient": "amb_world_4",
+      "levels": [],
+      "boss": "door_warden",
+      "implemented": false
+    },
+    "5": {
+      "name_key": "world_5",
+      "subtitle_key": "world_5_sub",
+      "music": "music_world_5",
+      "ambient": "amb_world_5",
+      "levels": [],
+      "boss": "deep_leviathan",
+      "implemented": false
+    },
+    "6": {
+      "name_key": "world_6",
+      "subtitle_key": "world_6_sub",
+      "music": "music_world_6",
+      "ambient": "amb_world_6",
+      "levels": [],
+      "boss": "mirror_double",
+      "implemented": false
+    },
+    "7": {
+      "name_key": "world_7",
+      "subtitle_key": "world_7_sub",
+      "music": "music_world_7",
+      "ambient": "amb_world_7",
+      "levels": [],
+      "boss": "time_lord",
+      "implemented": false
+    },
+    "8": {
+      "name_key": "world_8",
+      "subtitle_key": "world_8_sub",
+      "music": "music_world_8",
+      "ambient": "amb_world_8",
+      "levels": [],
+      "boss": "night_king",
+      "implemented": false
+    }
+  }
+}

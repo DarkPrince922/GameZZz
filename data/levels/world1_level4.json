@@ -1,0 +1,278 @@
+{
+  "schema": 1,
+  "id": "world1_level4",
+  "world": 1,
+  "name_key": "level_w1_4",
+  "tile_size": 32,
+  "height": 14,
+  "ground_runs": [
+    [
+      11,
+      12
+    ],
+    [
+      10,
+      8
+    ],
+    [
+      0,
+      3
+    ],
+    [
+      10,
+      10
+    ],
+    [
+      9,
+      6
+    ],
+    [
+      0,
+      4
+    ],
+    [
+      9,
+      9
+    ],
+    [
+      11,
+      4
+    ],
+    [
+      0,
+      3
+    ],
+    [
+      11,
+      10
+    ],
+    [
+      10,
+      6
+    ],
+    [
+      0,
+      3
+    ],
+    [
+      10,
+      12
+    ],
+    [
+      11,
+      10
+    ]
+  ],
+  "platforms": [
+    {
+      "x": 16,
+      "y": 7,
+      "w": 4,
+      "one_way": true
+    },
+    {
+      "x": 30,
+      "y": 6,
+      "w": 4,
+      "one_way": true
+    },
+    {
+      "x": 50,
+      "y": 6,
+      "w": 3,
+      "one_way": true
+    },
+    {
+      "x": 64,
+      "y": 7,
+      "w": 5,
+      "one_way": true
+    },
+    {
+      "x": 82,
+      "y": 6,
+      "w": 4,
+      "one_way": true
+    }
+  ],
+  "ladders": [
+    {
+      "x": 24,
+      "top": 5,
+      "bottom": 10
+    }
+  ],
+  "spikes": [
+    {
+      "x": 44,
+      "y": 8,
+      "w": 2
+    },
+    {
+      "x": 76,
+      "y": 9,
+      "w": 3
+    }
+  ],
+  "spawn": [
+    2,
+    11
+  ],
+  "goal": [
+    96,
+    11
+  ],
+  "checkpoints": [
+    [
+      26,
+      10
+    ],
+    [
+      55,
+      11
+    ],
+    [
+      86,
+      10
+    ]
+  ],
+  "enemies": [
+    {
+      "type": "shadow",
+      "x": 14,
+      "y": 10
+    },
+    {
+      "type": "jumper",
+      "x": 19,
+      "y": 10
+    },
+    {
+      "type": "flyer",
+      "x": 27,
+      "y": 5
+    },
+    {
+      "type": "shooter",
+      "x": 34,
+      "y": 9
+    },
+    {
+      "type": "bomber",
+      "x": 43,
+      "y": 9
+    },
+    {
+      "type": "shieldbearer",
+      "x": 50,
+      "y": 9,
+      "elite": "vampiric"
+    },
+    {
+      "type": "flyer",
+      "x": 60,
+      "y": 6
+    },
+    {
+      "type": "jumper",
+      "x": 66,
+      "y": 11
+    },
+    {
+      "type": "shadow",
+      "x": 72,
+      "y": 10
+    },
+    {
+      "type": "shooter",
+      "x": 80,
+      "y": 10
+    },
+    {
+      "type": "bomber",
+      "x": 88,
+      "y": 10,
+      "elite": "fast"
+    },
+    {
+      "type": "shieldbearer",
+      "x": 94,
+      "y": 11
+    }
+  ],
+  "traps": [
+    {
+      "type": "laser",
+      "x": 22,
+      "y": 6,
+      "w": 3
+    },
+    {
+      "type": "falling_platform",
+      "x": 47,
+      "y": 7
+    },
+    {
+      "type": "moving_wall",
+      "x": 69,
+      "y": 6,
+      "h": 4
+    },
+    {
+      "type": "spikes",
+      "x": 74,
+      "y": 10,
+      "w": 4
+    }
+  ],
+  "shards": [
+    [
+      18,
+      7
+    ],
+    [
+      31,
+      6
+    ],
+    [
+      51,
+      6
+    ],
+    [
+      65,
+      7
+    ],
+    [
+      83,
+      6
+    ],
+    [
+      90,
+      11
+    ]
+  ],
+  "chests": [
+    [
+      38,
+      9
+    ],
+    [
+      68,
+      11
+    ]
+  ],
+  "secrets": [
+    {
+      "x": 46,
+      "y": 6,
+      "w": 5,
+      "h": 4
+    }
+  ],
+  "music": "music_world_1",
+  "ambient": "amb_world_1",
+  "star_conditions": {
+    "collect_all": true,
+    "no_deaths": true
+  }
+}

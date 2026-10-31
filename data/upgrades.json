@@ -1,0 +1,56 @@
+{
+  "schema": 1,
+  "comment": "Shelter upgrades bought with dream shards. Prices are checked by tests/unit/test_balance.gd.",
+  "upgrades": {
+    "health": {
+      "name_key": "upgrade_health",
+      "desc_key": "upgrade_health_desc",
+      "max_level": 5,
+      "price_base": 30,
+      "price_growth": 1.6,
+      "value_base": 20,
+      "value_per_level": 10,
+      "stat": "max_hp"
+    },
+    "damage": {
+      "name_key": "upgrade_damage",
+      "desc_key": "upgrade_damage_desc",
+      "max_level": 5,
+      "price_base": 35,
+      "price_growth": 1.65,
+      "value_base": 1.0,
+      "value_per_level": 0.08,
+      "stat": "damage_mult"
+    },
+    "speed": {
+      "name_key": "upgrade_speed",
+      "desc_key": "upgrade_speed_desc",
+      "max_level": 5,
+      "price_base": 25,
+      "price_growth": 1.55,
+      "value_base": 1.0,
+      "value_per_level": 0.05,
+      "stat": "speed_mult"
+    },
+    "ability_double_jump": {
+      "name_key": "upgrade_double_jump",
+      "desc_key": "upgrade_double_jump_desc",
+      "max_level": 1,
+      "price_base": 60,
+      "price_growth": 1.0,
+      "value_base": 1,
+      "value_per_level": 0,
+      "stat": "double_jump"
+    },
+    "ability_dash": {
+      "name_key": "upgrade_dash",
+      "desc_key": "upgrade_dash_desc",
+      "max_level": 1,
+      "price_base": 75,
+      "price_growth": 1.0,
+      "value_base": 1,
+      "value_per_level": 0,
+      "stat": "dash"
+    }
+  }
+}

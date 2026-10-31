@@ -1,0 +1,242 @@
+{
+  "schema": 1,
+  "id": "world1_level2",
+  "world": 1,
+  "name_key": "level_w1_2",
+  "tile_size": 32,
+  "height": 14,
+  "ground_runs": [
+    [
+      11,
+      8
+    ],
+    [
+      10,
+      6
+    ],
+    [
+      0,
+      3
+    ],
+    [
+      10,
+      8
+    ],
+    [
+      9,
+      4
+    ],
+    [
+      9,
+      4
+    ],
+    [
+      0,
+      2
+    ],
+    [
+      10,
+      12
+    ],
+    [
+      8,
+      6
+    ],
+    [
+      9,
+      4
+    ],
+    [
+      0,
+      4
+    ],
+    [
+      10,
+      14
+    ],
+    [
+      11,
+      17
+    ]
+  ],
+  "platforms": [
+    {
+      "x": 18,
+      "y": 6,
+      "w": 3,
+      "one_way": true
+    },
+    {
+      "x": 36,
+      "y": 7,
+      "w": 4,
+      "one_way": true
+    },
+    {
+      "x": 58,
+      "y": 6,
+      "w": 5,
+      "one_way": true
+    },
+    {
+      "x": 76,
+      "y": 7,
+      "w": 4,
+      "one_way": true
+    }
+  ],
+  "ladders": [
+    {
+      "x": 26,
+      "top": 6,
+      "bottom": 10
+    }
+  ],
+  "spikes": [
+    {
+      "x": 48,
+      "y": 9,
+      "w": 2
+    }
+  ],
+  "spawn": [
+    2,
+    11
+  ],
+  "goal": [
+    89,
+    11
+  ],
+  "checkpoints": [
+    [
+      22,
+      10
+    ],
+    [
+      52,
+      8
+    ]
+  ],
+  "enemies": [
+    {
+      "type": "jumper",
+      "x": 13,
+      "y": 10
+    },
+    {
+      "type": "flyer",
+      "x": 21,
+      "y": 5
+    },
+    {
+      "type": "shadow",
+      "x": 30,
+      "y": 9
+    },
+    {
+      "type": "shooter",
+      "x": 40,
+      "y": 10
+    },
+    {
+      "type": "bomber",
+      "x": 45,
+      "y": 10
+    },
+    {
+      "type": "shieldbearer",
+      "x": 52,
+      "y": 8
+    },
+    {
+      "type": "flyer",
+      "x": 60,
+      "y": 5
+    },
+    {
+      "type": "jumper",
+      "x": 66,
+      "y": 10
+    },
+    {
+      "type": "shadow",
+      "x": 74,
+      "y": 10,
+      "elite": "vampiric"
+    },
+    {
+      "type": "shooter",
+      "x": 82,
+      "y": 11
+    }
+  ],
+  "traps": [
+    {
+      "type": "laser",
+      "x": 33,
+      "y": 7,
+      "w": 3
+    },
+    {
+      "type": "falling_platform",
+      "x": 55,
+      "y": 8
+    },
+    {
+      "type": "moving_wall",
+      "x": 70,
+      "y": 6,
+      "h": 4
+    }
+  ],
+  "shards": [
+    [
+      10,
+      10
+    ],
+    [
+      31,
+      9
+    ],
+    [
+      38,
+      7
+    ],
+    [
+      58,
+      6
+    ],
+    [
+      78,
+      7
+    ],
+    [
+      85,
+      11
+    ]
+  ],
+  "chests": [
+    [
+      24,
+      10
+    ],
+    [
+      61,
+      10
+    ]
+  ],
+  "secrets": [
+    {
+      "x": 42,
+      "y": 7,
+      "w": 4,
+      "h": 4
+    }
+  ],
+  "music": "music_world_1",
+  "ambient": "amb_world_1",
+  "star_conditions": {
+    "collect_all": true,
+    "no_deaths": true
+  }
+}

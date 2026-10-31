@@ -1,0 +1,72 @@
+{
+  "schema": 1,
+  "comment": "Boss definitions: phases, weak points, vulnerability windows and per-attack audio. Sounds are telegraph-first so the player can react.",
+  "bosses": {
+    "bed_monster": {
+      "name_key": "boss_bed_monster",
+      "title_key": "boss_bed_monster_title",
+      "world": 1,
+      "level": "world1_boss",
+      "music": "music_boss",
+      "max_hp": 420,
+      "size": [150, 130],
+      "color": [0.34, 0.22, 0.38],
+      "gravity": 1400.0,
+      "weak_point": {"offset": [0, -46], "size": [54, 46], "damage_mult": 1.8},
+      "stun_after_attacks": 3,
+      "stun_duration": 2.6,
+      "phases": [
+        {
+          "index": 1,
+          "hp_to": 0.66,
+          "attack_interval": 2.3,
+          "move_speed": 55.0,
+          "attacks": ["claw", "toys"]
+        },
+        {
+          "index": 2,
+          "hp_to": 0.33,
+          "attack_interval": 1.8,
+          "move_speed": 80.0,
+          "attacks": ["claw", "toys", "tantrum"]
+        },
+        {
+          "index": 3,
+          "hp_to": 0.0,
+          "attack_interval": 1.3,
+          "move_speed": 110.0,
+          "attacks": ["tantrum", "claw", "toys"],
+          "summon": {"type": "shadow", "count": 2, "elite": ""}
+        }
+      ],
+      "attacks": {
+        "claw": {
+          "damage": 12,
+          "telegraph": 0.7,
+          "telegraph_sfx": "boss_telegraph",
+          "sfx": "boss_attack_claw",
+          "recovery": 0.5,
+          "reach": 190.0,
+          "hitbox": [170, 70]
+        },
+        "toys": {
+          "damage": 8,
+          "telegraph": 0.55,
+          "telegraph_sfx": "boss_telegraph",
+          "sfx": "boss_attack_toys",
+          "recovery": 0.6,
+          "projectiles": 3,
+          "projectile_speed": 260.0
+        },
+        "tantrum": {
+          "damage": 16,
+          "telegraph": 0.9,
+          "telegraph_sfx": "boss_telegraph",
+          "sfx": "boss_attack_tantrum",
+          "recovery": 0.9,
+          "shockwave_radius": 260.0
+        }
+      }
+    }
+  }
+}

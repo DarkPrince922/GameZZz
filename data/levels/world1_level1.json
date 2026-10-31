@@ -1,0 +1,206 @@
+{
+  "schema": 1,
+  "comment": "World 1, level 1. Geometry is data: ground_runs = [ground_row, column_count] pairs; row 0 = void. Entities use tile coordinates, y = the solid ground row they stand on.",
+  "id": "world1_level1",
+  "world": 1,
+  "name_key": "level_w1_1",
+  "tile_size": 32,
+  "height": 14,
+  "ground_runs": [
+    [
+      11,
+      10
+    ],
+    [
+      10,
+      4
+    ],
+    [
+      11,
+      6
+    ],
+    [
+      0,
+      3
+    ],
+    [
+      11,
+      10
+    ],
+    [
+      9,
+      5
+    ],
+    [
+      9,
+      6
+    ],
+    [
+      0,
+      2
+    ],
+    [
+      9,
+      10
+    ],
+    [
+      10,
+      6
+    ],
+    [
+      0,
+      3
+    ],
+    [
+      10,
+      12
+    ],
+    [
+      11,
+      11
+    ]
+  ],
+  "platforms": [
+    {
+      "x": 30,
+      "y": 7,
+      "w": 4,
+      "one_way": true
+    },
+    {
+      "x": 53,
+      "y": 6,
+      "w": 4,
+      "one_way": true
+    },
+    {
+      "x": 69,
+      "y": 6,
+      "w": 5,
+      "one_way": true
+    }
+  ],
+  "ladders": [],
+  "spikes": [
+    {
+      "x": 34,
+      "y": 10,
+      "w": 2
+    }
+  ],
+  "spawn": [
+    2,
+    11
+  ],
+  "goal": [
+    86,
+    11
+  ],
+  "checkpoints": [
+    [
+      24,
+      11
+    ],
+    [
+      47,
+      9
+    ]
+  ],
+  "enemies": [
+    {
+      "type": "shadow",
+      "x": 16,
+      "y": 11
+    },
+    {
+      "type": "flyer",
+      "x": 29,
+      "y": 6
+    },
+    {
+      "type": "shadow",
+      "x": 40,
+      "y": 9
+    },
+    {
+      "type": "jumper",
+      "x": 50,
+      "y": 9
+    },
+    {
+      "type": "flyer",
+      "x": 60,
+      "y": 7
+    },
+    {
+      "type": "shadow",
+      "x": 70,
+      "y": 10,
+      "elite": "fast"
+    },
+    {
+      "type": "jumper",
+      "x": 80,
+      "y": 11
+    }
+  ],
+  "traps": [
+    {
+      "type": "falling_platform",
+      "x": 45,
+      "y": 8
+    },
+    {
+      "type": "spikes",
+      "x": 34,
+      "y": 10,
+      "w": 2
+    }
+  ],
+  "shards": [
+    [
+      12,
+      10
+    ],
+    [
+      13,
+      10
+    ],
+    [
+      31,
+      7
+    ],
+    [
+      55,
+      6
+    ],
+    [
+      71,
+      6
+    ],
+    [
+      82,
+      11
+    ]
+  ],
+  "chests": [
+    [
+      52,
+      9
+    ]
+  ],
+  "secrets": [
+    {
+      "x": 66,
+      "y": 7,
+      "w": 4,
+      "h": 4
+    }
+  ],
+  "music": "music_world_1",
+  "ambient": "amb_world_1",
+  "star_conditions": {
+    "collect_all": true,
+    "no_deaths": true
+  }
+}

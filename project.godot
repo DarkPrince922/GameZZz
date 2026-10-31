@@ -1,0 +1,62 @@
+; Engine configuration file.
+; Nightmare Hunter — 2D platformer for Android (Godot 4.5, GDScript).
+; Godot 4.x only. Do not open with Godot 3.x.
+
+config_version=5
+
+[application]
+
+config/name="Nightmare Hunter"
+config/description="Child with a light vs. nightmares. Offline 2D platformer."
+config/version="0.6.0"
+run/main_scene="res://scenes/main_menu.tscn"
+config/features=PackedStringArray("4.5", "GL Compatibility")
+config/icon="res://assets/graphics/icon.svg"
+boot_splash/bg_color=Color(0.043, 0.051, 0.102, 1)
+boot_splash/show_image=false
+
+[autoload]
+
+Settings="*res://scripts/autoload/settings_manager.gd"
+DataDB="*res://scripts/autoload/data_db.gd"
+Loc="*res://scripts/autoload/loc.gd"
+SaveManager="*res://scripts/autoload/save_manager.gd"
+AudioManager="*res://scripts/autoload/audio_manager.gd"
+Game="*res://scripts/autoload/game_state.gd"
+
+[display]
+
+window/size/viewport_width=1280
+window/size/viewport_height=720
+window/size/window_width_override=1280
+window/size/window_height_override=720
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
+window/handheld/orientation=4
+
+[input_devices]
+
+pointing/emulate_touch_from_mouse=true
+pointing/emulate_mouse_from_touch=true
+
+[physics]
+
+2d/default_gravity=1400.0
+common/physics_ticks_per_second=60
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+textures/vram_compression/import_etc2_astc=true
+environment/defaults/default_clear_color=Color(0.043, 0.051, 0.102, 1)
+
+[audio]
+
+driver/enable_input=false
+
+[debug]
+
+gdscript/warnings/untyped_declaration=1
+gdscript/warnings/unsafe_property_access=0
+gdscript/warnings/unsafe_method_access=0

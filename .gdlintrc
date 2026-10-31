@@ -1,0 +1,14 @@
+# gdtoolkit lint config (YAML). Flat keys matching gdlint's DEFAULT_CONFIG.
+max-line-length: 110
+max-file-lines: 1500
+function-name: '_?(_on_[a-z0-9_]+|[a-z][a-z0-9]*(_[a-z0-9]+)*)'
+disable:
+  - no-else-return
+  - no-elif-return
+  - max-returns
+  - max-public-methods
+  - function-arguments-number
+excluded_directories:
+  - .git
+  - addons
+  - .godot

@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <!-- Nightmare Hunter icon: own work, generated for this project (CC0). -->
+  <defs>
+    <radialGradient id="night" cx="50%" cy="42%" r="62%">
+      <stop offset="0%" stop-color="#2a3168"/>
+      <stop offset="100%" stop-color="#0b0d1a"/>
+    </radialGradient>
+    <radialGradient id="lamp" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#fff8d6" stop-opacity="1"/>
+      <stop offset="60%" stop-color="#ffd76a" stop-opacity="0.85"/>
+      <stop offset="100%" stop-color="#ffb347" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="512" height="512" rx="96" fill="url(#night)"/>
+  <circle cx="256" cy="236" r="170" fill="url(#lamp)" opacity="0.55"/>
+  <!-- moon -->
+  <circle cx="392" cy="118" r="46" fill="#cfe3ff" opacity="0.9"/>
+  <circle cx="372" cy="106" r="46" fill="#0b0d1a"/>
+  <!-- child silhouette -->
+  <g fill="#0d1024">
+    <circle cx="256" cy="286" r="54"/>
+    <path d="M214 322 q42 -26 84 0 l16 84 q-58 22 -116 0 z"/>
+  </g>
+  <!-- lantern / light in hands -->
+  <circle cx="256" cy="358" r="44" fill="#ffe9a8"/>
+  <circle cx="256" cy="358" r="26" fill="#fffdf2"/>
+  <path d="M256 314 l10 26 h-20 z" fill="#0d1024"/>
+  <!-- tiny monster eyes in the dark -->
+  <circle cx="96" cy="392" r="7" fill="#8de3ff"/>
+  <circle cx="128" cy="392" r="7" fill="#8de3ff"/>
+</svg>

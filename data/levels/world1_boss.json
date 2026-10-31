@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "id": "world1_boss",
+  "world": 1,
+  "name_key": "level_w1_boss",
+  "tile_size": 32,
+  "height": 14,
+  "ground_runs": [[11, 30]],
+  "platforms": [
+    {"x": 5, "y": 7, "w": 5, "one_way": true},
+    {"x": 20, "y": 7, "w": 5, "one_way": true}
+  ],
+  "ladders": [],
+  "spikes": [],
+  "spawn": [3, 11],
+  "goal": [28, 11],
+  "checkpoints": [],
+  "enemies": [],
+  "traps": [],
+  "shards": [],
+  "chests": [],
+  "secrets": [],
+  "boss": "bed_monster",
+  "music": "music_boss",
+  "ambient": "amb_world_1",
+  "star_conditions": {}
+}

@@ -1,0 +1,126 @@
+{
+  "schema": 1,
+  "comment": "Enemy definitions. Behaviour code lives in scripts/enemies/behaviour_*.gd; numbers live here so content can be tuned without touching code.",
+  "behaviors_note": "patrol_chase, flyer, jumper, shooter, bomber, shieldbearer",
+  "enemies": {
+    "shadow": {
+      "name_key": "enemy_shadow",
+      "behavior": "patrol_chase",
+      "hp": 18,
+      "damage": 8,
+      "speed": 55.0,
+      "chase_speed": 100.0,
+      "sight": 280.0,
+      "attack_range": 34.0,
+      "attack_cooldown": 1.1,
+      "size": [30, 46],
+      "color": [0.36, 0.31, 0.58],
+      "shards": [1, 2],
+      "knockback_resist": 0.0
+    },
+    "flyer": {
+      "name_key": "enemy_flyer",
+      "behavior": "flyer",
+      "hp": 12,
+      "damage": 7,
+      "speed": 85.0,
+      "chase_speed": 130.0,
+      "sight": 380.0,
+      "attack_range": 30.0,
+      "attack_cooldown": 1.4,
+      "size": [34, 28],
+      "color": [0.55, 0.42, 0.72],
+      "shards": [1, 2],
+      "fly_amplitude": 26.0,
+      "fly_frequency": 2.2
+    },
+    "jumper": {
+      "name_key": "enemy_jumper",
+      "behavior": "jumper",
+      "hp": 22,
+      "damage": 9,
+      "speed": 65.0,
+      "chase_speed": 110.0,
+      "sight": 320.0,
+      "attack_range": 40.0,
+      "attack_cooldown": 1.6,
+      "size": [32, 34],
+      "color": [0.30, 0.50, 0.44],
+      "shards": [1, 3],
+      "jump_velocity": -420.0,
+      "jump_interval": 1.35
+    },
+    "shooter": {
+      "name_key": "enemy_shooter",
+      "behavior": "shooter",
+      "hp": 16,
+      "damage": 6,
+      "speed": 40.0,
+      "chase_speed": 45.0,
+      "sight": 420.0,
+      "attack_range": 300.0,
+      "attack_cooldown": 1.9,
+      "size": [30, 42],
+      "color": [0.62, 0.38, 0.32],
+      "shards": [1, 2],
+      "projectile_speed": 260.0,
+      "projectile_damage": 6
+    },
+    "bomber": {
+      "name_key": "enemy_bomber",
+      "behavior": "bomber",
+      "hp": 10,
+      "damage": 18,
+      "speed": 90.0,
+      "chase_speed": 150.0,
+      "sight": 300.0,
+      "attack_range": 46.0,
+      "attack_cooldown": 99.0,
+      "size": [26, 26],
+      "color": [0.72, 0.55, 0.24],
+      "shards": [1, 2],
+      "fuse_seconds": 1.1,
+      "explosion_radius": 72.0
+    },
+    "shieldbearer": {
+      "name_key": "enemy_shieldbearer",
+      "behavior": "shieldbearer",
+      "hp": 34,
+      "damage": 11,
+      "speed": 42.0,
+      "chase_speed": 62.0,
+      "sight": 300.0,
+      "attack_cooldown": 1.5,
+      "attack_range": 40.0,
+      "size": [36, 50],
+      "color": [0.42, 0.42, 0.46],
+      "shards": [2, 3],
+      "shield_hp": 12,
+      "block_angle_degrees": 100.0
+    }
+  },
+  "elites": {
+    "fast": {
+      "name_key": "elite_fast",
+      "speed_mult": 1.45,
+      "hp_mult": 0.9,
+      "shards_mult": 1.5,
+      "color_tint": [0.55, 0.95, 1.0]
+    },
+    "vampiric": {
+      "name_key": "elite_vampiric",
+      "lifesteal_fraction": 0.35,
+      "hp_mult": 1.2,
+      "shards_mult": 1.5,
+      "color_tint": [1.0, 0.35, 0.42]
+    },
+    "reviving": {
+      "name_key": "elite_reviving",
+      "revive_count": 1,
+      "revive_hp_fraction": 0.5,
+      "hp_mult": 1.1,
+      "shards_mult": 2.0,
+      "color_tint": [0.75, 1.0, 0.55]
+    }
+  }
+}

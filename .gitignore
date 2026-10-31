@@ -1,0 +1,28 @@
+# Godot 4
+.godot/
+.import/
+*.import
+*.translation
+
+# Exported builds
+build/
+*.apk
+*.aab
+*.idsig
+
+# Signing material must never be committed
+*.keystore
+*.jks
+keystore.properties
+
+# GUT is downloaded by CI / `tools/fetch_gut.sh` (pinned version)
+addons/gut/
+
+# Python tooling
+__pycache__/
+*.pyc
+.venv/
+
+# OS noise
+.DS_Store
+Thumbs.db
