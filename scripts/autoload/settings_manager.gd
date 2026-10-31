@@ -37,7 +37,8 @@ func load_settings() -> void:
 	var values: Dictionary = DEFAULTS.duplicate(true)
 	if FileAccess.file_exists(PATH):
 		var text := FileAccess.get_file_as_string(PATH)
-		var parsed: Variant = JSON.parse_string(text)
+		var json := JSON.new()
+		var parsed: Variant = json.data if json.parse(text) == OK else null
 		if parsed is Dictionary:
 			for key: String in DEFAULTS.keys():
 				if parsed.has(key):

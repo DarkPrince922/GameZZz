@@ -42,13 +42,12 @@ func load_game() -> void:
 	var used_recovery := false
 	var loaded: Variant = _read_json(PATH)
 	if not (loaded is Dictionary):
+		if FileAccess.file_exists(PATH):
+			_keep_corrupt_copy()
+			used_recovery = true
 		var backup: Variant = _read_json(BACKUP)
 		if backup is Dictionary:
 			loaded = backup
-			used_recovery = true
-		elif FileAccess.file_exists(PATH):
-			_keep_corrupt_copy()
-			used_recovery = true
 	if loaded is Dictionary:
 		data = _normalise(loaded)
 		_migrate()
@@ -215,12 +214,18 @@ func owns_weapon(weapon_id: String) -> bool:
 
 # ---------------------------------------------------------------- internals
 func _read_json(path: String) -> Variant:
+	## JSON.new().parse() instead of JSON.parse_string(): the latter reports a
+	## broken file as an engine ERROR, which pollutes the log and (correctly)
+	## fails GUT's unexpected-error tracking.
 	if not FileAccess.file_exists(path):
 		return null
 	var text := FileAccess.get_file_as_string(path)
 	if text.strip_edges().is_empty():
 		return null
-	return JSON.parse_string(text)
+	var json := JSON.new()
+	if json.parse(text) != OK:
+		return null
+	return json.data
 
 
 func _write_json(path: String, payload: Dictionary) -> bool:

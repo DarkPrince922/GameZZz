@@ -64,9 +64,9 @@ static func shard_amount(raw: int, difficulty_name: String) -> int:
 
 
 static func stars_awarded(cleared: bool, collected_all: bool, no_deaths: bool) -> int:
-	var stars := 0
-	if cleared:
-		stars += 1
+	if not cleared:
+		return 0
+	var stars := 1
 	if collected_all:
 		stars += 1
 	if no_deaths:
