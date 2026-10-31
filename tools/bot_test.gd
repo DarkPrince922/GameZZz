@@ -75,7 +75,7 @@ func _run_level(level_id: String) -> void:
 			else:
 				stuck_frames = 0
 			# jump before a pit or a step-up, otherwise hop periodically
-			var probe_x := player.position.x + float(tile) * 1.8
+			var probe_x: float = player.position.x + float(tile) * 1.8
 			if _ground_at(columns, probe_x, tile) <= 0:
 				player.press_jump()
 			elif _ground_at(columns, probe_x, tile) > _ground_at(columns, player.position.x, tile):
