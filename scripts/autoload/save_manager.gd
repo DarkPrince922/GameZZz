@@ -52,7 +52,7 @@ func load_game() -> void:
 		data = _normalise(loaded)
 		_migrate()
 		if used_recovery:
-			push_warning("SaveManager: restored save from backup")
+			print("WARNING: ", "SaveManager: restored save from backup")
 			save_game()
 	progress_changed.emit()
 
@@ -231,7 +231,7 @@ func _read_json(path: String) -> Variant:
 func _write_json(path: String, payload: Dictionary) -> bool:
 	var file := FileAccess.open(path, FileAccess.WRITE)
 	if file == null:
-		push_warning("SaveManager: cannot write %s" % path)
+		print("WARNING: ", "SaveManager: cannot write %s" % path)
 		return false
 	file.store_string(JSON.stringify(payload, "  "))
 	file.close()
@@ -244,7 +244,7 @@ func _keep_corrupt_copy() -> void:
 	if file != null:
 		file.store_string(text)
 		file.close()
-	push_warning("SaveManager: save file was corrupt, copy kept in %s" % CORRUPT)
+	print("WARNING: ", "SaveManager: save file was corrupt, copy kept in %s" % CORRUPT)
 
 
 func _normalise(raw: Dictionary) -> Dictionary:

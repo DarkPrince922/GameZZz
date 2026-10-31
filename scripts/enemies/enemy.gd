@@ -59,7 +59,7 @@ func configure(enemy_type: String, elite_type: String = "") -> void:
 	elite_id = elite_type
 	data = DataDB.enemy(enemy_type)
 	if data.is_empty():
-		push_warning("Enemy: unknown type %s" % enemy_type)
+		print("WARNING: ", "Enemy: unknown type %s" % enemy_type)
 		data = {"hp": 10, "damage": 5, "speed": 50, "size": [28, 40], "behavior": "patrol_chase"}
 	elite = DataDB.elite(elite_type) if elite_type != "" else {}
 	hp = CombatMath.enemy_health(float(data.get("hp", 10.0)), Settings.difficulty)

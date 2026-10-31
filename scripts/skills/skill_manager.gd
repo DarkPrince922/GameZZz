@@ -148,7 +148,7 @@ func _apply_effect(effect: String, data: Dictionary) -> void:
 			_effects.append({"kind": "slow", "remaining": float(data.get("duration", 2.5)),
 					"data": data})
 		_:
-			push_warning("SkillManager: unknown effect %s" % effect)
+			print("WARNING: ", "SkillManager: unknown effect %s" % effect)
 
 
 func _tick_effects(delta: float) -> void:

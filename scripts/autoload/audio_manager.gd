@@ -187,7 +187,7 @@ func _event(event_id: String) -> Dictionary:
 	var entry := DataDB.sound_event(event_id)
 	if entry.is_empty():
 		last_missing_id = event_id
-		push_warning("AudioManager: unknown sound id '%s'" % event_id)
+		print("WARNING: ", "AudioManager: unknown sound id '%s'" % event_id)
 	return entry
 
 
@@ -198,18 +198,18 @@ func _pick_stream(entry: Dictionary, event_id: String) -> AudioStream:
 			files = [entry["file"]]
 		else:
 			last_missing_id = event_id
-			push_warning("AudioManager: sound '%s' has no files" % event_id)
+			print("WARNING: ", "AudioManager: sound '%s' has no files" % event_id)
 			return null
 	var path := str(files[_rng.randi_range(0, files.size() - 1)])
 	if _streams.has(path):
 		return _streams[path]
 	if not ResourceLoader.exists(path):
 		last_missing_id = event_id
-		push_warning("AudioManager: missing audio file %s" % path)
+		print("WARNING: ", "AudioManager: missing audio file %s" % path)
 		return null
 	var stream: AudioStream = load(path) as AudioStream
 	if stream == null:
-		push_warning("AudioManager: cannot load %s" % path)
+		print("WARNING: ", "AudioManager: cannot load %s" % path)
 		return null
 	_set_loop(stream, bool(entry.get("loop", false)))
 	_streams[path] = stream
@@ -341,7 +341,7 @@ func _music_entry(track_id: String) -> Dictionary:
 	var entry := DataDB.music_track(track_id)
 	if entry.is_empty():
 		last_missing_id = track_id
-		push_warning("AudioManager: unknown music id '%s'" % track_id)
+		print("WARNING: ", "AudioManager: unknown music id '%s'" % track_id)
 	return entry
 
 

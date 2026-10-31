@@ -45,7 +45,7 @@ func configure(id: String) -> void:
 	boss_id = id
 	data = DataDB.boss(id)
 	if data.is_empty():
-		push_warning("Boss: unknown boss %s" % id)
+		print("WARNING: ", "Boss: unknown boss %s" % id)
 		data = {"max_hp": 100, "phases": [{"hp_to": 0.0, "attack_interval": 2.0, "attacks": []}]}
 	max_hp = float(data.get("max_hp", 100.0))
 	if get_node_or_null("/root/Settings") != null:
@@ -225,10 +225,11 @@ func _summon_minions(summon: Dictionary) -> void:
 	for i in int(summon.get("count", 1)):
 		var minion = EnemyScene.instantiate()
 		minion.position = position + Vector2(randf_range(-90.0, 90.0), -20.0)
-		# add first, configure after: configure() reads autoloads
-		host.call_deferred("add_child", minion)
-		minion.call_deferred("configure", str(summon.get("type", "shadow")),
-				str(summon.get("elite", "")))
+		# add first, configure after: configure() reads autoloads. Adding
+		# synchronously keeps the node in the tree (deferred adds left orphans
+		# behind at the end of a test and leaked physics RIDs at exit).
+		host.add_child(minion)
+		minion.configure(str(summon.get("type", "shadow")), str(summon.get("elite", "")))
 
 
 func _die() -> void:

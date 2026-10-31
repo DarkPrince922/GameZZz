@@ -190,7 +190,7 @@ func _build_traps() -> void:
 								pos.y)})
 				add_child(extra)
 			_:
-				push_warning("Level: unknown trap type %s" % kind)
+				print("WARNING: ", "Level: unknown trap type %s" % kind)
 
 
 func _spawn_player() -> void:

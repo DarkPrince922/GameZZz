@@ -44,7 +44,7 @@ func load_settings() -> void:
 				if parsed.has(key):
 					values[key] = parsed[key]
 		else:
-			push_warning("Settings: damaged settings file, using defaults")
+			print("WARNING: ", "Settings: damaged settings file, using defaults")
 	_apply(values)
 	language_changed.emit(language)
 	changed.emit("all")
@@ -64,7 +64,7 @@ func save_settings() -> bool:
 	}
 	var file := FileAccess.open(PATH, FileAccess.WRITE)
 	if file == null:
-		push_warning("Settings: cannot write %s" % PATH)
+		print("WARNING: ", "Settings: cannot write %s" % PATH)
 		return false
 	file.store_string(JSON.stringify(data, "  "))
 	file.close()
