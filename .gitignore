@@ -26,3 +26,6 @@ __pycache__/
 # OS noise
 .DS_Store
 Thumbs.db
+
+# Browser/agent scratch output
+crew/
