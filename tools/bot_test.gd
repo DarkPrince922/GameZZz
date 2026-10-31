@@ -19,8 +19,12 @@ func _initialize() -> void:
 
 
 func _run() -> void:
-	Settings.set_value("difficulty", "easy")
-	for level_id: String in DataDB.level_ids_for_world(1):
+	# Standalone `-s` scripts compile before autoloads are registered as global
+	# identifiers, so they must be fetched from the tree at runtime.
+	var settings = root.get_node("Settings")
+	var data_db = root.get_node("DataDB")
+	settings.set_value("difficulty", "easy")
+	for level_id: String in data_db.level_ids_for_world(1):
 		await _run_level(level_id)
 	await _run_boss("world1_boss")
 	if _failures.is_empty():
@@ -33,7 +37,8 @@ func _run() -> void:
 
 
 func _spawn_level(level_id: String) -> Node:
-	Game.pending_level_id = level_id
+	var game = root.get_node("Game")
+	game.pending_level_id = level_id
 	var packed: PackedScene = load(LEVEL_SCENE) as PackedScene
 	var instance: Node = packed.instantiate()
 	root.add_child(instance)

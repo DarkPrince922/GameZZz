@@ -18,12 +18,16 @@ func _initialize() -> void:
 func _run() -> void:
 	var scenes := _scene_list()
 	print("[smoke] scene files: %d" % scenes.size())
+	# Standalone `-s` scripts compile before autoloads are registered as global
+	# identifiers, so they must be fetched from the tree at runtime.
+	var data_db = root.get_node("DataDB")
+	var game = root.get_node("Game")
 	for path: String in scenes:
 		await _check_scene(path)
-	for level_id: String in DataDB.level_ids():
-		Game.pending_level_id = level_id
+	for level_id: String in data_db.level_ids():
+		game.pending_level_id = level_id
 		await _check_scene("res://scenes/level.tscn", " with %s" % level_id)
-	print("[smoke] checked %d scene instances" % (scenes.size() + DataDB.level_ids().size()))
+	print("[smoke] checked %d scene instances" % (scenes.size() + data_db.level_ids().size()))
 	if _failures.is_empty():
 		print("[smoke] OK")
 		quit(0)
