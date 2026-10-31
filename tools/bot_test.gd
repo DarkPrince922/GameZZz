@@ -58,6 +58,8 @@ func _make_bot_player(level) -> Node:
 func _run_level(level_id: String) -> void:
 	var level = await _spawn_level(level_id)
 	var player = _make_bot_player(level)
+	var columns := _ground_columns(level)
+	var tile := int(level.level_data.get("tile_size", 32))
 	var frames := 0
 	var max_frames := MAX_SECONDS_PER_LEVEL * PHYSICS_FPS
 	var stuck_frames := 0
@@ -72,11 +74,19 @@ func _run_level(level_id: String) -> void:
 					stuck_frames = 0
 			else:
 				stuck_frames = 0
+			# jump before a pit or a step-up, otherwise hop periodically
+			var probe_x := player.position.x + float(tile) * 1.8
+			if _ground_at(columns, probe_x, tile) <= 0:
+				player.press_jump()
+			elif _ground_at(columns, probe_x, tile) > _ground_at(columns, player.position.x, tile):
+				player.press_jump()
 		if frames % 10 == 0:
 			player.press_attack()
 		if frames % 45 == 0 and player.is_on_floor():
 			player.press_jump()
 		if player.position.y > float(int(level.level_data.get("height", 14)) * 32 + 600):
+			print("[bot] %s fell into a pit at frame %d (x %.0f y %.0f)" % [
+				level_id, frames, player.position.x, player.position.y])
 			_failures.append("%s: bot fell out of the world" % level_id)
 			level.queue_free()
 			await process_frame
@@ -96,6 +106,24 @@ func _run_level(level_id: String) -> void:
 		_failures.append("%s: bot did not reach the goal" % level_id)
 	level.queue_free()
 	await process_frame
+
+
+func _ground_columns(level) -> Array:
+	var columns: Array = []
+	for run: Variant in level.level_data.get("ground_runs", []):
+		var pair: Array = run
+		var row := int(pair[0])
+		var count := int(pair[1])
+		for i in count:
+			columns.append(row)
+	return columns
+
+
+func _ground_at(columns: Array, x: float, tile: int) -> int:
+	var col := int(x / float(tile))
+	if col < 0 or col >= columns.size():
+		return 0
+	return int(columns[col])
 
 
 func _run_boss(level_id: String) -> void:

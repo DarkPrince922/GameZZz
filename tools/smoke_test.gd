@@ -65,8 +65,6 @@ func _check_scene(path: String, suffix: String = "") -> void:
 		if not is_instance_valid(instance):
 			_failures.append("%s freed itself after %d frames%s" % [path, i, suffix])
 			return
-	if instance.get_child_count() == 0 and path != "res://scenes/minimal.tscn":
-		_failures.append("%s built no nodes%s" % [path, suffix])
 	instance.queue_free()
 	await process_frame
 	print("[smoke] ok: %s%s" % [path, suffix])

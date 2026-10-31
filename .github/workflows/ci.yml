@@ -126,6 +126,10 @@ jobs:
           tail -n 120 smoke.log
           grep -nE "SCRIPT ERROR|Parse Error|ERROR:|FAIL" smoke.log \
             | head -10 | while IFS= read -r line; do echo "::error title=Smoke::$line"; done
+          BLOCK=$(tail -n 40 smoke.log | sed 's/%/%25/g' | paste -sd '|' - | sed 's/|/%0A/g')
+          if [ -n "$BLOCK" ]; then
+            echo "::error title=Smoke-tail::$BLOCK"
+          fi
           exit $STATUS
 
   bot:
@@ -155,6 +159,10 @@ jobs:
           tail -n 150 bot.log
           grep -nE "SCRIPT ERROR|Parse Error|ERROR:|\[bot\] FAIL" bot.log \
             | head -10 | while IFS= read -r line; do echo "::error title=Bot::$line"; done
+          BLOCK=$(tail -n 40 bot.log | sed 's/%/%25/g' | paste -sd '|' - | sed 's/|/%0A/g')
+          if [ -n "$BLOCK" ]; then
+            echo "::error title=Bot-tail::$BLOCK"
+          fi
           exit $STATUS
 
   android-debug:
