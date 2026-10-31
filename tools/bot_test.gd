@@ -82,6 +82,8 @@ func _run_level(level_id: String) -> void:
 				player.press_jump()
 		if frames % 10 == 0:
 			player.press_attack()
+		if frames % 150 == 0:
+			player.press_skill(1)
 		if frames % 45 == 0 and player.is_on_floor():
 			player.press_jump()
 		if player.position.y > float(int(level.level_data.get("height", 14)) * 32 + 600):
@@ -139,13 +141,15 @@ func _run_boss(level_id: String) -> void:
 	var max_frames := MAX_SECONDS_PER_BOSS * PHYSICS_FPS
 	while frames < max_frames:
 		var dx: float = boss.global_position.x - player.position.x
-		player.set_move_axis(signf(dx) if absf(dx) > 70.0 else 0.0)
+		player.set_move_axis(signf(dx) if absf(dx) > 40.0 else 0.0)
 		if absf(dx) > 40.0 and player.is_on_floor() and frames % 30 == 0:
 			player.press_jump()
 		if frames % 8 == 0:
 			player.press_attack()
 		if frames % 240 == 0:
 			player.press_skill(0)
+		if frames % 300 == 0:
+			player.press_skill(1)
 		if boss.is_dead:
 			break
 		await physics_frame
