@@ -58,7 +58,10 @@ def check_levels(db: dict) -> None:
         level = load(os.path.join(LEVELS, level_id + ".json"), f"level {level_id}")
         if not level:
             continue
+        is_boss = bool(level.get("boss", ""))
         for key in keys:
+            if key == "goal" and is_boss:
+                continue
             if key not in level:
                 problems.append(f"{level_id}: missing key {key}")
         width = width_of(level)
@@ -66,6 +69,8 @@ def check_levels(db: dict) -> None:
         if width < 20:
             problems.append(f"{level_id}: suspiciously narrow ({width} columns)")
         for field in ("spawn", "goal"):
+            if field == "goal" and is_boss:
+                continue
             value = level.get(field)
             if not (isinstance(value, list) and len(value) == 2):
                 problems.append(f"{level_id}: {field} must be [x, y]")
@@ -115,6 +120,8 @@ def check_levels(db: dict) -> None:
             return row is not None and abs(row - y_row) <= 1
 
         for field in ("spawn", "goal"):
+            if field == "goal" and is_boss:
+                continue
             if level.get(field) and not _stands(level[field]):
                 problems.append(f"{level_id}: {field} {level[field]} is not on solid ground")
         for checkpoint in level.get("checkpoints", []):

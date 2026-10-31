@@ -116,9 +116,15 @@ func begin_run(level_id: String) -> void:
 
 func collect_shard(amount: int = 1) -> void:
 	shards_in_run += amount
-	collectibles_found += 1
 	SaveManager.add_shards(amount)
 	shards_changed.emit(SaveManager.shards())
+
+
+func register_collectible() -> void:
+	## A dream shard and a chest both count as one collectible for the
+	## "collect everything" star, but a shard is worth several currency units
+	## and must not increment the collectible counter more than once.
+	collectibles_found += 1
 
 
 func note_death() -> void:

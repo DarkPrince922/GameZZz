@@ -145,6 +145,7 @@ func _apply_effect(effect: String, data: Dictionary) -> void:
 		"ultimate":
 			_damage_nearby(float(data.get("radius", 420.0)), power, 99)
 			Game.set_enemy_slow(0.35)
+			slow_timer = float(data.get("duration", 2.5))
 			_effects.append({"kind": "slow", "remaining": float(data.get("duration", 2.5)),
 					"data": data})
 		_:

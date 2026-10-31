@@ -238,12 +238,13 @@ func _spawn_pickups() -> void:
 		checkpoint.position = Vector2(float(int(pair[0]) * tile_size) + tile_size / 2.0,
 				float(int(pair[1]) * tile_size) - 4.0)
 		add_child(checkpoint)
-	var goal := GoalDoor.new()
-	var goal_pair: Array = level_data.get("goal", [10, 11])
-	goal.position = Vector2(float(int(goal_pair[0]) * tile_size) + tile_size / 2.0,
-			float(int(goal_pair[1]) * tile_size) - 4.0)
-	goal.reached.connect(_on_goal_reached)
-	add_child(goal)
+	if level_data.has("goal"):
+		var goal := GoalDoor.new()
+		var goal_pair: Array = level_data["goal"]
+		goal.position = Vector2(float(int(goal_pair[0]) * tile_size) + tile_size / 2.0,
+				float(int(goal_pair[1]) * tile_size) - 4.0)
+		goal.reached.connect(_on_goal_reached)
+		add_child(goal)
 
 
 func _spawn_secrets() -> void:

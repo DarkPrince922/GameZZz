@@ -18,6 +18,16 @@ func _ready() -> void:
 	_build()
 
 
+func _unhandled_input(event: InputEvent) -> void:
+	## This node is PROCESS_MODE_ALWAYS so it can unpause the tree; the level
+	## (pausable) cannot receive input while paused.
+	if not visible:
+		return
+	if event.is_action_pressed("pause"):
+		resume_requested.emit()
+		get_viewport().set_input_as_handled()
+
+
 func _build() -> void:
 	var back := ColorRect.new()
 	back.color = Color(0.02, 0.02, 0.06, 0.85)

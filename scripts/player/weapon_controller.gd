@@ -66,7 +66,7 @@ func attack() -> Dictionary:
 
 func _melee_attack() -> Dictionary:
 	var reach := float(data.get("reach", 48.0))
-	var damage_mult := 0.0
+	var damage_mult: float = 1.0
 	if get_node_or_null("/root/Game") != null:
 		damage_mult = Game.damage_multiplier()
 	var step_mult := COMBAT.combo_step(combo_index, data.get("combo_step_damage", [1.0]))

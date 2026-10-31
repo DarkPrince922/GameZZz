@@ -31,6 +31,7 @@ func open() -> void:
 	if get_node_or_null("/root/Game") != null:
 		for i in shards:
 			Game.collect_shard(1)
+		Game.register_collectible()
 	queue_redraw()
 
 

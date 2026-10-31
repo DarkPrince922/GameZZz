@@ -18,13 +18,15 @@ func test_world_one_has_four_levels_and_a_boss() -> void:
 func test_every_level_file_is_valid() -> void:
 	for level_id: String in DataDB.level_ids():
 		var level := DataDB.level(level_id)
+		var is_boss := str(level.get("boss", "")) != ""
 		assert_false(level.is_empty(), "%s must parse" % level_id)
 		assert_true(level.has("ground_runs"), "%s needs ground_runs" % level_id)
 		assert_true(level.has("spawn"), "%s needs a spawn point" % level_id)
-		assert_true(level.has("goal"), "%s needs a goal" % level_id)
+		if not is_boss:
+			assert_true(level.has("goal"), "%s needs a goal" % level_id)
 		var width := _width(level)
 		var spawn: Array = level.get("spawn", [0, 0])
-		var goal: Array = level.get("goal", [0, 0])
+		var goal: Array = level.get("goal", [spawn[0], spawn[1]])
 		assert_between(int(spawn[0]), 0, width - 1, "%s spawn inside the map" % level_id)
 		assert_between(int(goal[0]), 0, width - 1, "%s goal inside the map" % level_id)
 		var height := int(level.get("height", 14))

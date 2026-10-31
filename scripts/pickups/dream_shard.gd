@@ -42,6 +42,7 @@ func set_attracted(value_on: bool) -> void:
 func _collect() -> void:
 	if get_node_or_null("/root/Game") != null:
 		Game.collect_shard(value)
+		Game.register_collectible()
 		var chain := Game.shards_in_run
 		AudioManager.play("shard_pickup", CombatMath.shard_chain_pitch(chain % 9))
 	else:
