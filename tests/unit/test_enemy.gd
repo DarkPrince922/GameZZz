@@ -17,9 +17,9 @@ func before_each() -> void:
 
 func _make(enemy_type: String, elite: String = "") -> Node:
 	_enemy = EnemyScene.instantiate()
-	_enemy.configure(enemy_type, elite)
 	_enemy.position = Vector2(100, 0)
 	_world.add_child(_enemy)
+	_enemy.configure(enemy_type, elite)
 	_enemy.died.connect(func(_who: Node) -> void: _died = true)
 	return _enemy
 
@@ -94,8 +94,8 @@ func test_shieldbearer_hurt_from_behind() -> void:
 
 func test_unknown_enemy_type_is_safe() -> void:
 	var enemy = EnemyScene.instantiate()
-	enemy.configure("enemy_from_the_future")
 	_world.add_child(enemy)
+	enemy.configure("enemy_from_the_future")
 	assert_gt(enemy.max_hp, 0.0, "unknown types fall back to sane defaults instead of crashing")
 	enemy.free()
 

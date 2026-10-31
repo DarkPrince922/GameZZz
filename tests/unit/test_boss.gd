@@ -16,9 +16,9 @@ func before_each() -> void:
 	_phase_events.clear()
 	_died = false
 	_boss = BossScene.instantiate()
-	_boss.configure("bed_monster")
 	_boss.position = Vector2(0, 0)
 	_world.add_child(_boss)
+	_boss.configure("bed_monster")
 	_boss.phase_changed.connect(func(index: int) -> void: _phase_events.append(index))
 	_boss.died.connect(func() -> void: _died = true)
 

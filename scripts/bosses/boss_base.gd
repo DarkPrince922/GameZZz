@@ -60,6 +60,8 @@ func configure(id: String) -> void:
 
 
 func _build_body() -> void:
+	if _shape != null:
+		return
 	_shape = CollisionShape2D.new()
 	_rect = RectangleShape2D.new()
 	var size: Array = data.get("size", [140, 120])
@@ -223,8 +225,10 @@ func _summon_minions(summon: Dictionary) -> void:
 	for i in int(summon.get("count", 1)):
 		var minion = EnemyScene.instantiate()
 		minion.position = position + Vector2(randf_range(-90.0, 90.0), -20.0)
-		minion.configure(str(summon.get("type", "shadow")), str(summon.get("elite", "")))
+		# add first, configure after: configure() reads autoloads
 		host.call_deferred("add_child", minion)
+		minion.call_deferred("configure", str(summon.get("type", "shadow")),
+				str(summon.get("elite", "")))
 
 
 func _die() -> void:

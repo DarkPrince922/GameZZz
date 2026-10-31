@@ -188,6 +188,12 @@ func body_radius() -> float:
 	return maxf(float(size[0]), float(size[1])) * 0.6
 
 
+func play_at(event_id: String) -> void:
+	## Behaviours are RefCounted helpers: they must not touch autoloads
+	## directly (Godot cannot resolve /root singletons outside the tree).
+	AudioManager.play_spatial_or_global(event_id, global_position)
+
+
 func blocks_hit(from_position: Vector2) -> bool:
 	if _behaviour != null and _behaviour.has_method("blocks_hit"):
 		return bool(_behaviour.blocks_hit(self, from_position))

@@ -24,7 +24,7 @@ func update(enemy, delta: float) -> void:
 		enemy.velocity = to_target.normalized() * minf(chase_speed, to_target.length() * 2.4)
 		if fly_sound_timer <= 0.0:
 			fly_sound_timer = 1.8
-			AudioManager.play_spatial_or_global("enemy_flyer_fly", enemy.global_position)
+			enemy.play_at("enemy_flyer_fly")
 		if enemy.distance_to_player() < enemy.attack_range:
 			enemy.try_attack(delta)
 	else:

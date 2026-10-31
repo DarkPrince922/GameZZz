@@ -33,7 +33,7 @@ func update(enemy, delta: float) -> void:
 
 
 func _shoot(enemy) -> void:
-	AudioManager.play_spatial_or_global("enemy_shooter_shoot", enemy.global_position)
+	enemy.play_at("enemy_shooter_shoot")
 	var host: Node = enemy.get_parent()
 	if host == null:
 		return

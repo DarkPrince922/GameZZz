@@ -24,7 +24,7 @@ func update(enemy, delta: float) -> void:
 		beep_timer -= delta
 		if beep_timer <= 0.0:
 			beep_timer = 0.32
-			AudioManager.play_spatial_or_global("enemy_bomber_beep", enemy.global_position)
+			enemy.play_at("enemy_bomber_beep")
 		if fuse <= 0.0:
 			_explode(enemy)
 	enemy.apply_gravity(enemy, delta)
@@ -32,7 +32,7 @@ func update(enemy, delta: float) -> void:
 
 func _explode(enemy) -> void:
 	var radius := float(enemy.data.get("explosion_radius", 72.0))
-	AudioManager.play_spatial_or_global("enemy_bomber_explode", enemy.global_position)
+	enemy.play_at("enemy_bomber_explode")
 	var target: Vector2 = enemy.player_position()
 	if target != Vector2.INF and enemy.global_position.distance_to(target) <= radius:
 		if enemy.player != null and enemy.player.has_method("take_damage"):

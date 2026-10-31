@@ -212,10 +212,11 @@ func _spawn_enemies() -> void:
 	for enemy_data: Variant in level_data.get("enemies", []):
 		var e: Dictionary = enemy_data
 		var enemy = EnemyScene.instantiate()
-		enemy.configure(str(e.get("type", "shadow")), str(e.get("elite", "")))
 		enemy.position = Vector2(float(int(e.get("x", 0)) * tile_size) + tile_size / 2.0,
 				float(int(e.get("y", 10)) * tile_size))
+		# add first: configure() reads autoloads, which need the node in the tree
 		add_child(enemy)
+		enemy.configure(str(e.get("type", "shadow")), str(e.get("elite", "")))
 
 
 func _spawn_pickups() -> void:
@@ -262,10 +263,10 @@ func _spawn_boss() -> void:
 	if boss_id == "":
 		return
 	boss = BossScene.instantiate()
-	boss.configure(boss_id)
 	var arena_center := float(maxi(world_width, 30)) * tile_size * 0.62
 	boss.position = Vector2(arena_center, float((level_height - 3) * tile_size))
 	add_child(boss)
+	boss.configure(boss_id)
 	if boss.has_signal("died"):
 		boss.died.connect(_on_boss_died)
 
