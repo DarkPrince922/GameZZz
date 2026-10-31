@@ -80,7 +80,13 @@ jobs:
           tail -n 120 gut.log
           # Public annotations: lets an unauthenticated reader see why it failed.
           grep -nE "SCRIPT ERROR|Parse Error|ERROR:|Failed|FAILED|error" gut.log \
-            | head -10 | while IFS= read -r line; do echo "::error title=GUT::$line"; done
+            | head -8 | while IFS= read -r line; do echo "::error title=GUT::$line"; done
+          # One annotation with the whole failure block (newlines escaped as %0A).
+          BLOCK=$(awk 'seen { print } /\[Failed\]/ { seen = 1; print }' gut.log \
+            | head -40 | sed 's/%/%25/g' | paste -sd '|' - | sed 's/|/%0A/g')
+          if [ -n "$BLOCK" ]; then
+            echo "::error title=GUT-details::$BLOCK"
+          fi
           if grep -q "SCRIPT ERROR" gut.log; then
             echo "::error title=GUT::script errors during GUT run"
             exit 1
