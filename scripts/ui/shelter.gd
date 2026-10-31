@@ -1,7 +1,7 @@
 extends Control
 ## Shelter: permanent upgrades bought with dream shards.
 
-const Theme := preload("res://scripts/ui/ui_theme.gd")
+const UITheme := preload("res://scripts/ui/ui_theme.gd")
 
 var _rows: VBoxContainer
 var _shards_label: Label
@@ -10,20 +10,20 @@ var _error: Label
 
 func _ready() -> void:
 	set_anchors_preset(Control.PRESET_FULL_RECT)
-	Theme.background(self)
+	UITheme.background(self)
 	AudioManager.play_music("music_shelter")
 	var view := get_viewport_rect().size
-	var title := Theme.make_label(self, Loc.text("shelter"), Vector2(60.0, 40.0), 42)
-	title.add_theme_color_override("font_color", Theme.ACCENT)
-	Theme.make_label(self, Loc.text("shelter_hint"), Vector2(60.0, 96.0), 20, Theme.MUTED)
-	_shards_label = Theme.make_label(self, "", Vector2(view.x - 340.0, 46.0), 24,
+	var title := UITheme.make_label(self, Loc.text("shelter"), Vector2(60.0, 40.0), 42)
+	title.add_theme_color_override("font_color", UITheme.ACCENT)
+	UITheme.make_label(self, Loc.text("shelter_hint"), Vector2(60.0, 96.0), 20, UITheme.MUTED)
+	_shards_label = UITheme.make_label(self, "", Vector2(view.x - 340.0, 46.0), 24,
 			Color(0.8, 0.92, 1.0))
 	_rows = VBoxContainer.new()
 	_rows.position = Vector2(60.0, 140.0)
 	_rows.add_theme_constant_override("separation", 10)
 	add_child(_rows)
-	_error = Theme.make_label(self, "", Vector2(60.0, view.y - 120.0), 20, Theme.DANGER)
-	var back := Theme.make_button(self, Loc.text("back"), Vector2(60.0, view.y - 76.0),
+	_error = UITheme.make_label(self, "", Vector2(60.0, view.y - 120.0), 20, UITheme.DANGER)
+	var back := UITheme.make_button(self, Loc.text("back"), Vector2(60.0, view.y - 76.0),
 			Vector2(200, 54))
 	back.pressed.connect(func() -> void: Game.goto_menu())
 	_refresh()
@@ -53,7 +53,7 @@ func _upgrade_row(upgrade_id: String) -> HBoxContainer:
 	var desc := Label.new()
 	desc.text = Loc.text(str(data.get("desc_key", "")))
 	desc.add_theme_font_size_override("font_size", 17)
-	desc.add_theme_color_override("font_color", Theme.MUTED)
+	desc.add_theme_color_override("font_color", UITheme.MUTED)
 	info.add_child(desc)
 	row.add_child(info)
 	var button := Button.new()

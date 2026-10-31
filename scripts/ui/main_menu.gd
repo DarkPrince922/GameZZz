@@ -1,7 +1,7 @@
 extends Control
 ## Main menu: play, level select, shelter, equipment, settings. Offline only.
 
-const Theme := preload("res://scripts/ui/ui_theme.gd")
+const UITheme := preload("res://scripts/ui/ui_theme.gd")
 const SettingsMenu := preload("res://scripts/ui/settings_menu.gd")
 
 var _settings: Control
@@ -11,7 +11,7 @@ var _shards_label: Label
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	set_anchors_preset(Control.PRESET_FULL_RECT)
-	Theme.background(self)
+	UITheme.background(self)
 	AudioManager.set_paused(false)
 	AudioManager.play_music("music_menu")
 	AudioManager.stop_ambience()
@@ -23,11 +23,11 @@ func _build() -> void:
 		if child is Label or child is Button or child.name == "MenuColumn":
 			child.queue_free()
 	var view := get_viewport_rect().size
-	var title := Theme.make_label(self, Loc.text("game_title"),
+	var title := UITheme.make_label(self, Loc.text("game_title"),
 			Vector2(view.x / 2.0 - 230.0, 70.0), 56)
-	title.add_theme_color_override("font_color", Theme.ACCENT)
-	Theme.make_label(self, Loc.text("tagline"), Vector2(view.x / 2.0 - 220.0, 140.0), 22,
-			Theme.MUTED)
+	title.add_theme_color_override("font_color", UITheme.ACCENT)
+	UITheme.make_label(self, Loc.text("tagline"), Vector2(view.x / 2.0 - 220.0, 140.0), 22,
+			UITheme.MUTED)
 	var column := VBoxContainer.new()
 	column.name = "MenuColumn"
 	column.position = Vector2(view.x / 2.0 - 150.0, 200.0)
@@ -43,11 +43,11 @@ func _build() -> void:
 	equip.pressed.connect(func() -> void: Game.goto_menu_scene("res://scenes/equip.tscn"))
 	var settings := _add_menu_button(column, Loc.text("settings"))
 	settings.pressed.connect(_open_settings)
-	_shards_label = Theme.make_label(self,
+	_shards_label = UITheme.make_label(self,
 			"%s: %d" % [Loc.text("shards"), SaveManager.shards()],
 			Vector2(view.x - 320.0, 40.0), 24, Color(0.8, 0.92, 1.0))
-	Theme.make_label(self, "v%s" % ProjectSettings.get_setting("application/config/version", "0.1"),
-			Vector2(24.0, view.y - 40.0), 18, Theme.MUTED)
+	UITheme.make_label(self, "v%s" % ProjectSettings.get_setting("application/config/version", "0.1"),
+			Vector2(24.0, view.y - 40.0), 18, UITheme.MUTED)
 
 
 func _add_menu_button(parent: Control, text: String) -> Button:

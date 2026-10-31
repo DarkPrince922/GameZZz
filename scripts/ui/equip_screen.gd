@@ -2,7 +2,7 @@ extends Control
 ## Equipment: pick one weapon and three skills. Saves immediately, so the next
 ## run starts with the chosen loadout.
 
-const Theme := preload("res://scripts/ui/ui_theme.gd")
+const UITheme := preload("res://scripts/ui/ui_theme.gd")
 
 var _weapon_row: HBoxContainer
 var _skill_grid: GridContainer
@@ -12,26 +12,26 @@ var _error: Label
 
 func _ready() -> void:
 	set_anchors_preset(Control.PRESET_FULL_RECT)
-	Theme.background(self)
+	UITheme.background(self)
 	AudioManager.play_music("music_menu")
 	var view := get_viewport_rect().size
-	var title := Theme.make_label(self, Loc.text("equip"), Vector2(60.0, 36.0), 42)
-	title.add_theme_color_override("font_color", Theme.ACCENT)
-	Theme.make_label(self, Loc.text("equip_weapon"), Vector2(60.0, 104.0), 24, Theme.MUTED)
+	var title := UITheme.make_label(self, Loc.text("equip"), Vector2(60.0, 36.0), 42)
+	title.add_theme_color_override("font_color", UITheme.ACCENT)
+	UITheme.make_label(self, Loc.text("equip_weapon"), Vector2(60.0, 104.0), 24, UITheme.MUTED)
 	_weapon_row = HBoxContainer.new()
 	_weapon_row.position = Vector2(60.0, 140.0)
 	_weapon_row.add_theme_constant_override("separation", 12)
 	add_child(_weapon_row)
-	Theme.make_label(self, Loc.text("equip_title"), Vector2(60.0, 240.0), 24, Theme.MUTED)
+	UITheme.make_label(self, Loc.text("equip_title"), Vector2(60.0, 240.0), 24, UITheme.MUTED)
 	_skill_grid = GridContainer.new()
 	_skill_grid.columns = 4
 	_skill_grid.position = Vector2(60.0, 276.0)
 	_skill_grid.add_theme_constant_override("h_separation", 12)
 	_skill_grid.add_theme_constant_override("v_separation", 12)
 	add_child(_skill_grid)
-	_status = Theme.make_label(self, "", Vector2(60.0, view.y - 156.0), 20, Theme.MUTED)
-	_error = Theme.make_label(self, "", Vector2(60.0, view.y - 126.0), 20, Theme.DANGER)
-	var back := Theme.make_button(self, Loc.text("back"), Vector2(60.0, view.y - 76.0),
+	_status = UITheme.make_label(self, "", Vector2(60.0, view.y - 156.0), 20, UITheme.MUTED)
+	_error = UITheme.make_label(self, "", Vector2(60.0, view.y - 126.0), 20, UITheme.DANGER)
+	var back := UITheme.make_button(self, Loc.text("back"), Vector2(60.0, view.y - 76.0),
 			Vector2(200, 54))
 	back.pressed.connect(func() -> void: Game.goto_menu())
 	_refresh()

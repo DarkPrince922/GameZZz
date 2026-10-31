@@ -2,24 +2,24 @@ extends Control
 ## Level select: worlds on the left, levels + boss on the right, stars per level.
 ## Locked worlds say so honestly instead of pretending to have content.
 
-const Theme := preload("res://scripts/ui/ui_theme.gd")
+const UITheme := preload("res://scripts/ui/ui_theme.gd")
 
 var _content: VBoxContainer
 
 
 func _ready() -> void:
 	set_anchors_preset(Control.PRESET_FULL_RECT)
-	Theme.background(self)
+	UITheme.background(self)
 	AudioManager.play_music("music_menu")
 	var view := get_viewport_rect().size
-	var title := Theme.make_label(self, Loc.text("levels"), Vector2(60.0, 40.0), 42)
-	title.add_theme_color_override("font_color", Theme.ACCENT)
+	var title := UITheme.make_label(self, Loc.text("levels"), Vector2(60.0, 40.0), 42)
+	title.add_theme_color_override("font_color", UITheme.ACCENT)
 	_content = VBoxContainer.new()
 	_content.position = Vector2(60.0, 120.0)
 	_content.custom_minimum_size = Vector2(view.x - 120.0, view.y - 220.0)
 	_content.add_theme_constant_override("separation", 12)
 	add_child(_content)
-	var back := Theme.make_button(self, Loc.text("back"), Vector2(60.0, view.y - 80.0),
+	var back := UITheme.make_button(self, Loc.text("back"), Vector2(60.0, view.y - 80.0),
 			Vector2(200, 54))
 	back.pressed.connect(func() -> void: Game.goto_menu())
 	_populate()
@@ -34,12 +34,12 @@ func _populate() -> void:
 		var world_label := Label.new()
 		world_label.text = "%d. %s" % [world_number, Loc.text(str(world.get("name_key", "")))]
 		world_label.add_theme_font_size_override("font_size", 26)
-		world_label.add_theme_color_override("font_color", Theme.ACCENT if unlocked else Theme.MUTED)
+		world_label.add_theme_color_override("font_color", UITheme.ACCENT if unlocked else UITheme.MUTED)
 		header.add_child(world_label)
 		var subtitle := Label.new()
 		subtitle.text = Loc.text(str(world.get("subtitle_key", "")))
 		subtitle.add_theme_font_size_override("font_size", 18)
-		subtitle.add_theme_color_override("font_color", Theme.MUTED)
+		subtitle.add_theme_color_override("font_color", UITheme.MUTED)
 		header.add_child(subtitle)
 		_content.add_child(header)
 		var row := HBoxContainer.new()
@@ -49,7 +49,7 @@ func _populate() -> void:
 		if level_ids.is_empty():
 			var locked := Label.new()
 			locked.text = Loc.text(str("locked")) + " — " + Loc.text("loading")
-			locked.add_theme_color_override("font_color", Theme.MUTED)
+			locked.add_theme_color_override("font_color", UITheme.MUTED)
 			row.add_child(locked)
 			continue
 		for level_id: Variant in level_ids:

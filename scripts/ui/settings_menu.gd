@@ -4,7 +4,7 @@ extends Control
 
 signal closed()
 
-const Theme := preload("res://scripts/ui/ui_theme.gd")
+const UITheme := preload("res://scripts/ui/ui_theme.gd")
 
 var _rows: Dictionary = {}
 
@@ -23,37 +23,37 @@ func _ready() -> void:
 func _build() -> void:
 	var view := get_viewport_rect().size
 	var x := view.x / 2.0 - 220.0
-	var title := Theme.make_label(self, Loc.text("settings"), Vector2(x, 40.0), 40)
-	title.add_theme_color_override("font_color", Theme.ACCENT)
+	var title := UITheme.make_label(self, Loc.text("settings"), Vector2(x, 40.0), 40)
+	title.add_theme_color_override("font_color", UITheme.ACCENT)
 	var y := 110.0
 	y = _add_slider(Loc.text("master_volume"), "master_volume", x, y)
 	y = _add_slider(Loc.text("music_volume"), "music_volume", x, y)
 	y = _add_slider(Loc.text("sfx_volume"), "sfx_volume", x, y)
 	y = _add_slider(Loc.text("button_scale"), "button_scale", x, y, 0.6, 1.6)
 	y = _add_slider(Loc.text("button_opacity"), "button_opacity", x, y, 0.15, 1.0)
-	var vibration := Theme.make_button(self,
+	var vibration := UITheme.make_button(self,
 			"%s: %s" % [Loc.text("vibration"), Loc.text("on") if Settings.vibration else Loc.text("off")],
 			Vector2(x, y), Vector2(300, 52))
 	vibration.pressed.connect(_toggle_vibration)
 	_rows["vibration"] = vibration
-	var language := Theme.make_button(self, "%s: %s" % [Loc.text("language"),
+	var language := UITheme.make_button(self, "%s: %s" % [Loc.text("language"),
 			Settings.language.to_upper()], Vector2(x + 320.0, y), Vector2(160, 52))
 	language.pressed.connect(_toggle_language)
 	y += 70.0
-	var difficulty := Theme.make_button(self, "%s: %s" % [Loc.text("difficulty"),
+	var difficulty := UITheme.make_button(self, "%s: %s" % [Loc.text("difficulty"),
 			Loc.text("difficulty_%s" % Settings.difficulty)], Vector2(x, y), Vector2(300, 52))
 	difficulty.pressed.connect(_cycle_difficulty)
-	var close := Theme.make_button(self, Loc.text("back"),
+	var close := UITheme.make_button(self, Loc.text("back"),
 			Vector2(x, minf(y + 80.0, view.y - 90.0)), Vector2(200, 56))
 	close.pressed.connect(func() -> void: closed.emit())
 
 
 func _add_slider(label_text: String, key: String, x: float, y: float,
 		minimum: float = 0.0, maximum: float = 1.0) -> float:
-	var label := Theme.make_label(self, label_text, Vector2(x, y), 22)
-	label.add_theme_color_override("font_color", Theme.MUTED)
+	var label := UITheme.make_label(self, label_text, Vector2(x, y), 22)
+	label.add_theme_color_override("font_color", UITheme.MUTED)
 	var value: float = float(Settings.get_value(key))
-	var slider := Theme.make_slider(self, Vector2(x, y + 30.0), value, 480.0)
+	var slider := UITheme.make_slider(self, Vector2(x, y + 30.0), value, 480.0)
 	slider.min_value = minimum
 	slider.max_value = maximum
 	slider.value = value

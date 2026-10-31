@@ -4,7 +4,7 @@ extends Control
 signal continue_requested()
 signal menu_requested()
 
-const Theme := preload("res://scripts/ui/ui_theme.gd")
+const UITheme := preload("res://scripts/ui/ui_theme.gd")
 
 var _stats: Dictionary = {}
 var _stars_shown: int = 0
@@ -29,11 +29,11 @@ func setup(stats: Dictionary) -> void:
 func _build() -> void:
 	var view := get_viewport_rect().size
 	_stats.get("stars", 0)
-	var title := Theme.make_label(self, Loc.text("level_complete"),
+	var title := UITheme.make_label(self, Loc.text("level_complete"),
 			Vector2(view.x / 2.0 - 200.0, 90.0), 44)
-	title.add_theme_color_override("font_color", Theme.ACCENT)
+	title.add_theme_color_override("font_color", UITheme.ACCENT)
 	var level_name := Loc.text(str(_stats.get("level_id", "")))
-	Theme.make_label(self, level_name, Vector2(view.x / 2.0 - 160.0, 150.0), 26, Theme.MUTED)
+	UITheme.make_label(self, level_name, Vector2(view.x / 2.0 - 160.0, 150.0), 26, UITheme.MUTED)
 	var stars_row := HBoxContainer.new()
 	stars_row.position = Vector2(view.x / 2.0 - 120.0, 200.0)
 	stars_row.add_theme_constant_override("separation", 20)
@@ -44,18 +44,18 @@ func _build() -> void:
 		star.text = "★" if i < total_stars else "☆"
 		star.add_theme_font_size_override("font_size", 56)
 		star.add_theme_color_override("font_color",
-				Theme.ACCENT if i < total_stars else Theme.MUTED)
+				UITheme.ACCENT if i < total_stars else UITheme.MUTED)
 		stars_row.add_child(star)
 	var details := "%s: %d/%d    %s: %d    %s: %d" % [
 		Loc.text("collectibles"), int(_stats.get("collected", 0)), int(_stats.get("total", 0)),
 		Loc.text("deaths"), int(_stats.get("deaths", 0)),
 		Loc.text("shards"), int(_stats.get("shards", 0)),
 	]
-	Theme.make_label(self, details, Vector2(view.x / 2.0 - 280.0, 300.0), 22, Theme.MUTED)
-	var cont := Theme.make_button(self, Loc.text("next_level"),
+	UITheme.make_label(self, details, Vector2(view.x / 2.0 - 280.0, 300.0), 22, UITheme.MUTED)
+	var cont := UITheme.make_button(self, Loc.text("next_level"),
 			Vector2(view.x / 2.0 - 140.0, 380.0))
 	cont.pressed.connect(func() -> void: continue_requested.emit())
-	var menu := Theme.make_button(self, Loc.text("quit_to_menu"),
+	var menu := UITheme.make_button(self, Loc.text("quit_to_menu"),
 			Vector2(view.x / 2.0 - 140.0, 460.0))
 	menu.pressed.connect(func() -> void: menu_requested.emit())
 	_animate_stars(total_stars)
