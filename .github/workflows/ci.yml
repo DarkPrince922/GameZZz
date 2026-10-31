@@ -71,14 +71,21 @@ jobs:
       - name: Run GUT
         run: |
           mkdir -p build/reports
-          set -o pipefail
+          set +e
           godot --headless --audio-driver Dummy -s res://addons/gut/gut_cmdln.gd \
             -gdir=res://tests/unit -ginclude_subdirs -gexit -glog=1 \
-            -gjunit_xml_file=res://build/reports/gut.xml 2>&1 | tee gut.log
+            -gjunit_xml_file=res://build/reports/gut.xml > gut.log 2>&1
+          STATUS=$?
+          set -e
+          tail -n 120 gut.log
+          # Public annotations: lets an unauthenticated reader see why it failed.
+          grep -nE "SCRIPT ERROR|Parse Error|ERROR:|Failed|FAILED|error" gut.log \
+            | head -10 | while IFS= read -r line; do echo "::error title=GUT::$line"; done
           if grep -q "SCRIPT ERROR" gut.log; then
-            echo "::error::script errors during GUT run"
+            echo "::error title=GUT::script errors during GUT run"
             exit 1
           fi
+          exit $STATUS
       - name: Upload GUT report
         if: always()
         uses: actions/upload-artifact@v4
@@ -106,12 +113,14 @@ jobs:
         run: bash tools/import_project.sh
       - name: Smoke test every scene with the Dummy audio driver
         run: |
-          set -o pipefail
-          godot --headless --audio-driver Dummy -s tools/smoke_test.gd 2>&1 | tee smoke.log
-          if grep -qE "SCRIPT ERROR|^ERROR:" smoke.log; then
-            echo "::error::errors in the smoke test log"
-            exit 1
-          fi
+          set +e
+          godot --headless --audio-driver Dummy -s tools/smoke_test.gd > smoke.log 2>&1
+          STATUS=$?
+          set -e
+          tail -n 120 smoke.log
+          grep -nE "SCRIPT ERROR|Parse Error|ERROR:|FAIL" smoke.log \
+            | head -10 | while IFS= read -r line; do echo "::error title=Smoke::$line"; done
+          exit $STATUS
 
   bot:
     name: Bot playthrough
@@ -133,12 +142,14 @@ jobs:
         run: bash tools/import_project.sh
       - name: Bot completes every world-1 level and boss 1
         run: |
-          set -o pipefail
-          godot --headless --audio-driver Dummy --fixed-fps 60 -s tools/bot_test.gd 2>&1 | tee bot.log
-          if grep -q "SCRIPT ERROR" bot.log; then
-            echo "::error::script errors during the bot run"
-            exit 1
-          fi
+          set +e
+          godot --headless --audio-driver Dummy --fixed-fps 60 -s tools/bot_test.gd > bot.log 2>&1
+          STATUS=$?
+          set -e
+          tail -n 150 bot.log
+          grep -nE "SCRIPT ERROR|Parse Error|ERROR:|\[bot\] FAIL" bot.log \
+            | head -10 | while IFS= read -r line; do echo "::error title=Bot::$line"; done
+          exit $STATUS
 
   android-debug:
     name: Debug APK
