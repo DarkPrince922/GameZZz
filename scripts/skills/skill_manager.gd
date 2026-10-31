@@ -220,7 +220,7 @@ func _damage_nearest(count: int, radius: float, power: float) -> int:
 		var enemy = node as Node2D
 		if enemy == null or not enemy.has_method("take_damage"):
 			continue
-		var distance := enemy.global_position.distance_to(_player.global_position)
+		var distance: float = enemy.global_position.distance_to(_player.global_position)
 		if distance <= radius:
 			candidates.append({"node": enemy, "distance": distance})
 	candidates.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
@@ -238,7 +238,7 @@ func _damage_nearest(count: int, radius: float, power: float) -> int:
 func _summon_plush(duration: float, power: float) -> void:
 	if _player == null:
 		return
-	var host := _player.get_parent()
+	var host: Node = _player.get_parent()
 	if host == null:
 		return
 	var plush := PlushFriend.new()
@@ -252,7 +252,7 @@ func _summon_plush(duration: float, power: float) -> void:
 func _spawn_fire_zone(power: float) -> void:
 	if _player == null:
 		return
-	var host := _player.get_parent()
+	var host: Node = _player.get_parent()
 	if host == null:
 		return
 	var zone := FireZone.new()

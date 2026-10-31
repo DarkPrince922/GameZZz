@@ -19,8 +19,8 @@ func update(enemy, delta: float) -> void:
 	if enemy.sees_player():
 		enemy.facing = enemy.direction_to_player()
 		var chase_speed := float(enemy.data.get("chase_speed", enemy.speed * 1.4))
-		var target := enemy.player.global_position + Vector2(-enemy.facing * 12.0, -34.0 + bob)
-		var to_target := target - enemy.global_position
+		var target: Vector2 = enemy.player.global_position + Vector2(-enemy.facing * 12.0, -34.0 + bob)
+		var to_target: Vector2 = target - enemy.global_position
 		enemy.velocity = to_target.normalized() * minf(chase_speed, to_target.length() * 2.4)
 		if fly_sound_timer <= 0.0:
 			fly_sound_timer = 1.8
@@ -28,6 +28,6 @@ func update(enemy, delta: float) -> void:
 		if enemy.distance_to_player() < enemy.attack_range:
 			enemy.try_attack(delta)
 	else:
-		var drift := enemy.global_position.x - anchor.x
+		var drift: float = enemy.global_position.x - anchor.x
 		enemy.facing = signf(drift) if absf(drift) > 4.0 else enemy.facing
 		enemy.velocity = Vector2(0.0, cos(time * frequency) * amplitude * 0.4)

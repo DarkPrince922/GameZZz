@@ -10,7 +10,7 @@ func setup(_enemy) -> void:
 
 
 func update(enemy, delta: float) -> void:
-	var distance := enemy.distance_to_player()
+	var distance: float = enemy.distance_to_player()
 	var chase_speed := float(enemy.data.get("chase_speed", enemy.speed * 1.6))
 	if fuse < 0.0:
 		enemy.facing = enemy.direction_to_player()
@@ -33,7 +33,7 @@ func update(enemy, delta: float) -> void:
 func _explode(enemy) -> void:
 	var radius := float(enemy.data.get("explosion_radius", 72.0))
 	AudioManager.play_spatial_or_global("enemy_bomber_explode", enemy.global_position)
-	var target := enemy.player_position()
+	var target: Vector2 = enemy.player_position()
 	if target != Vector2.INF and enemy.global_position.distance_to(target) <= radius:
 		if enemy.player != null and enemy.player.has_method("take_damage"):
 			enemy.player.take_damage(enemy.damage, enemy.global_position)

@@ -26,8 +26,8 @@ func _physics_process(delta: float) -> void:
 		queue_free()
 		return
 	_target = _nearest_enemy()
-	var destination := _player.global_position + Vector2(-24.0, -8.0) if _player != null \
-			else global_position
+	var destination: Vector2 = _player.global_position + Vector2(-24.0, -8.0) \
+			if _player != null else global_position
 	if _target != null:
 		destination = _target.global_position
 	var to_destination := destination - global_position
@@ -50,7 +50,7 @@ func _nearest_enemy() -> Node2D:
 			continue
 		if enemy.get("is_dead") != null and bool(enemy.get("is_dead")):
 			continue
-		var distance := enemy.global_position.distance_to(global_position)
+		var distance: float = enemy.global_position.distance_to(global_position)
 		if distance < best_distance:
 			best_distance = distance
 			best = enemy

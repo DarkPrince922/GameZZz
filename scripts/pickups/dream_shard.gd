@@ -26,9 +26,9 @@ func _physics_process(delta: float) -> void:
 		_player = nodes[0] as Node2D if not nodes.is_empty() else null
 	if _player == null:
 		return
-	var distance := _player.global_position.distance_to(global_position)
+	var distance: float = _player.global_position.distance_to(global_position)
 	if attracted and distance > 6.0:
-		var dir := (_player.global_position - global_position).normalized()
+		var dir: Vector2 = (_player.global_position - global_position).normalized()
 		position += dir * 420.0 * delta
 		return
 	if distance <= 26.0:

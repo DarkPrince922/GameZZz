@@ -17,7 +17,7 @@ func _physics_process(delta: float) -> void:
 	_paw_offset = sin(Time.get_ticks_msec() / 220.0) * 6.0
 	if player != null and not is_dead and stun_timer <= 0.0 and _pending_attack == "":
 		var speed := float(phase.get("move_speed", 50.0))
-		var distance := absf(player.global_position.x - global_position.x)
+		var distance: float = absf(player.global_position.x - global_position.x)
 		if distance > 140.0:
 			velocity.x = facing * speed
 		else:
@@ -54,7 +54,7 @@ func _throw_toy(index: int, total: int, speed: float) -> void:
 	var spread := (float(index) - float(total - 1) / 2.0) * 0.28
 	var size: Array = data.get("size", [140, 120])
 	var origin := global_position + Vector2(facing * 40.0, -float(size[1]) * 0.6)
-	var direction := (player.global_position - origin).normalized().rotated(spread)
+	var direction: Vector2 = (player.global_position - origin).normalized().rotated(spread)
 	projectile.setup({
 		"position": origin,
 		"velocity": direction * speed,

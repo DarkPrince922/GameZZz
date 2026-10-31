@@ -33,7 +33,7 @@ func _physics_process(delta: float) -> void:
 		_player = nodes[0] as Node2D if not nodes.is_empty() else null
 	if _player == null or _timer > 0.0:
 		return
-	var probe := _player.global_position + Vector2(0.0, 10.0)
+	var probe: Vector2 = _player.global_position + Vector2(0.0, 10.0)
 	if not hit_rect().has_point(probe):
 		return
 	_timer = cooldown

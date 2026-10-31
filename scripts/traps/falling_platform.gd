@@ -72,7 +72,7 @@ func _player_on_top() -> bool:
 		_player = nodes[0] as Node2D if not nodes.is_empty() else null
 	if _player == null:
 		return false
-	var feet := _player.global_position + Vector2(0.0, 22.0)
+	var feet: Vector2 = _player.global_position + Vector2(0.0, 22.0)
 	var half := float(platform_width * tile_size) / 2.0
 	return absf(feet.x - global_position.x) < half and absf(feet.y - global_position.y) < 16.0
 

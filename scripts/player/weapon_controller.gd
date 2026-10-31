@@ -108,7 +108,7 @@ func _ranged_attack() -> Dictionary:
 		"hit_sfx": str(data.get("hit_sfx", "combat_hit")),
 		"owner": _player,
 	})
-	var host := _player.get_parent() if _player.get_parent() != null else _player
+	var host: Node = _player.get_parent() if _player.get_parent() != null else _player
 	host.add_child(projectile)
 	return {"hit": false, "projectile": true, "combo": combo_index}
 
@@ -123,7 +123,7 @@ func _enemies_in_arc(origin: Vector2, reach: float, facing: float) -> Array:
 			continue
 		if enemy.get("is_dead") != null and bool(enemy.get("is_dead")):
 			continue
-		var offset := enemy.global_position - origin
+		var offset: Vector2 = enemy.global_position - origin
 		var allowed := reach + _enemy_radius(enemy)
 		if absf(offset.y) > 70.0:
 			continue
@@ -146,5 +146,5 @@ func _enemy_radius(enemy) -> float:
 func _spawn_hit_flash(at: Vector2) -> void:
 	var flash = load("res://scripts/combat/hit_flash.gd").new()
 	flash.position = at
-	var host := _player.get_parent() if _player.get_parent() != null else _player
+	var host: Node = _player.get_parent() if _player.get_parent() != null else _player
 	host.add_child(flash)

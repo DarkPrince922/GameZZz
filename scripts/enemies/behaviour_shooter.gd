@@ -13,7 +13,7 @@ func setup(enemy) -> void:
 
 
 func update(enemy, delta: float) -> void:
-	var distance := enemy.distance_to_player()
+	var distance: float = enemy.distance_to_player()
 	if enemy.sees_player():
 		enemy.facing = enemy.direction_to_player()
 		if distance < preferred_min:
@@ -34,12 +34,12 @@ func update(enemy, delta: float) -> void:
 
 func _shoot(enemy) -> void:
 	AudioManager.play_spatial_or_global("enemy_shooter_shoot", enemy.global_position)
-	var host := enemy.get_parent()
+	var host: Node = enemy.get_parent()
 	if host == null:
 		return
 	var projectile := EnemyProjectile.new()
-	var target := enemy.player_position()
-	var direction := (target - enemy.global_position).normalized()
+	var target: Vector2 = enemy.player_position()
+	var direction: Vector2 = (target - enemy.global_position).normalized()
 	if direction == Vector2.ZERO:
 		direction = Vector2(enemy.facing, 0.0)
 	projectile.setup({
