@@ -58,6 +58,9 @@ func _make_bot_player(level) -> Node:
 func _run_level(level_id: String) -> void:
 	var level = await _spawn_level(level_id)
 	var player = _make_bot_player(level)
+	# a finished run pauses the tree (the victory screen); the scripted bot
+	# never presses Continue, so unpause before the next playthrough.
+	paused = false
 	var columns := _ground_columns(level)
 	var tile := int(level.level_data.get("tile_size", 32))
 	var frames := 0
@@ -136,6 +139,7 @@ func _run_boss(level_id: String) -> void:
 	var level = await _spawn_level(level_id)
 	var player = _make_bot_player(level)
 	var boss = level.boss
+	paused = false
 	if boss == null:
 		_failures.append("boss level spawned no boss")
 		level.queue_free()
