@@ -94,8 +94,9 @@ func _run_level(level_id: String) -> void:
 			await process_frame
 			return
 		if frames % 600 == 0:
-			print("[bot] %s progress frame=%d x=%.0f y=%.0f vel=%.0f" % [
-				level_id, frames, player.position.x, player.position.y, player.velocity.x])
+			print("[bot] %s progress frame=%d x=%.0f y=%.0f vx=%.0f state=%d axis=%.1f floor=%s" % [
+				level_id, frames, player.position.x, player.position.y,
+				player.velocity.x, player.state, player.move_axis, player.is_on_floor()])
 		if level.is_finished():
 			break
 		if absf(player.position.x - last_x) < 0.5:
