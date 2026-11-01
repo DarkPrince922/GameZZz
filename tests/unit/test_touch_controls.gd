@@ -159,17 +159,17 @@ func test_multitouch_stick_and_two_buttons() -> void:
 func test_release_resets_every_button() -> void:
 	for key in ["jump", "attack", "dash", "skill_0", "skill_1", "skill_2"]:
 		_touch(key, true)
-	var jumps_after := _mock.jumps
-	var attacks_after := _mock.attacks
-	var dashes_after := _mock.dashes
-	var skills_after := _mock.skills.duplicate()
+	var jumps_after: int = _mock.jumps
+	var attacks_after: int = _mock.attacks
+	var dashes_after: int = _mock.dashes
+	var skills_after: Array = _mock.skills.duplicate()
 	for key in ["jump", "attack", "dash", "skill_0", "skill_1", "skill_2"]:
 		_touch(key, false)
 	assert_eq(_controls.active_touch_count(), 0, "all fingers released")
 	assert_eq(_mock.jumps, jumps_after, "release must not re-trigger jump")
 	assert_eq(_mock.attacks, attacks_after, "release must not re-trigger attack")
 	assert_eq(_mock.dashes, dashes_after, "release must not re-trigger dash")
-	assert_eq_deep(_mock.skills, skills_after, "release must not re-trigger skills")
+	assert_eq_deep(_mock.skills, skills_after)
 
 
 func test_layout_all_resolutions_inside_safe_area() -> void:
