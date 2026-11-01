@@ -1,19 +1,33 @@
 extends Control
 ## Virtual stick (left) + jump / attack / dash / skill buttons (right).
+##
 ## True multitouch: every touch index is tracked separately, so running and
-## attacking at the same time always works. Sizes and opacity come from Settings.
+## attacking at the same time always works, and releasing a finger always
+## clears its action (no stuck presses).
+##
+## Layout is anchored to the viewport edges (not absolute pixels) and honours
+## the display safe area, so nothing is clipped on 20:9 or 4:3 screens. Button
+## size and opacity come from Settings and apply immediately.
+##
+## Buttons dispatch their Input Map action (jump/attack/dash/skill_1..3); the
+## player reads those same actions, so desktop and touch share one code path.
+## The stick is analog and drives the player directly.
 
 signal pause_requested()
 
 const STICK_MAX := 96.0
 const STICK_DEAD_ZONE := 0.12
+const MIN_BUTTON_DIAMETER := 64.0
+const EDGE_PAD := 24.0
+
+## Exposed so layout tests can assert bounds and overlaps without rendering.
+var widgets: Dictionary = {}
 
 var player
 var _touches: Dictionary = {}
 var _stick_index: int = -1
 var _stick_origin: Vector2 = Vector2.ZERO
 var _stick_vector: Vector2 = Vector2.ZERO
-var _widgets: Dictionary = {}
 var _font: Font
 var _scale: float = 1.0
 var _opacity: float = 0.75
@@ -41,40 +55,100 @@ func _on_settings_changed(key: String) -> void:
 		_layout()
 
 
+## Safe-area insets in canvas pixels: never less than EDGE_PAD, larger where
+## the device has a notch, rounded corners or a gesture bar.
+func _safe_insets(view: Vector2) -> Dictionary:
+	var insets := {"top": EDGE_PAD, "bottom": EDGE_PAD, "left": EDGE_PAD, "right": EDGE_PAD}
+	if DisplayServer.get_name() == "headless":
+		return insets
+	var safe: Rect2i = DisplayServer.get_display_safe_area()
+	if safe.size.x <= 0 or safe.size.y <= 0:
+		return insets
+	var win := DisplayServer.window_get_size()
+	if win.x <= 0 or win.y <= 0:
+		return insets
+	var sx := view.x / float(win.x)
+	var sy := view.y / float(win.y)
+	insets["left"] = maxf(EDGE_PAD, float(safe.position.x) * sx)
+	insets["top"] = maxf(EDGE_PAD, float(safe.position.y) * sy)
+	insets["right"] = maxf(EDGE_PAD, float(win.x - safe.end.x) * sx)
+	insets["bottom"] = maxf(EDGE_PAD, float(win.y - safe.end.y) * sy)
+	return insets
+
+
 func _layout() -> void:
-	var view := get_viewport_rect().size
-	_widgets.clear()
-	var stick_center := Vector2(150.0 * _scale, view.y - 140.0 * _scale)
-	_widgets["stick"] = {"center": stick_center, "radius": 104.0 * _scale}
-	_widgets["attack"] = {
-		"center": Vector2(view.x - 120.0 * _scale, view.y - 110.0 * _scale),
-		"radius": 62.0 * _scale, "label": "A",
-	}
-	_widgets["jump"] = {
-		"center": Vector2(view.x - 250.0 * _scale, view.y - 150.0 * _scale),
-		"radius": 56.0 * _scale, "label": "J",
-	}
-	_widgets["dash"] = {
-		"center": Vector2(view.x - 210.0 * _scale, view.y - 280.0 * _scale),
-		"radius": 40.0 * _scale, "label": "D",
-	}
+	layout_for(get_viewport().get_visible_rect().size)
+
+
+## Compute widget geometry for an explicit view size. Kept separate from
+## `_layout` so layout tests can pass any resolution deterministically.
+func layout_for(view: Vector2) -> void:
+	var insets := _safe_insets(view)
+	widgets.clear()
+	var left := float(insets["left"])
+	var right := float(insets["right"])
+	var top := float(insets["top"])
+	var bottom := float(insets["bottom"])
+
+	# Stick: bottom-left, diameter ~22% of the screen height.
+	var stick_radius := clampf(view.y * 0.11, 60.0, 96.0) * _scale
+	var stick_center := Vector2(left + stick_radius, view.y - bottom - stick_radius)
+	widgets["stick"] = _make_widget(stick_center, stick_radius, "move")
+
+	# Attack and jump: bottom-right, large and easy to hit.
+	var attack_radius := clampf(view.y * 0.085, 54.0, 78.0) * _scale
+	var jump_radius := clampf(view.y * 0.075, 48.0, 68.0) * _scale
+	var attack_center := Vector2(view.x - right - attack_radius, view.y - bottom - attack_radius)
+	var jump_center := Vector2(attack_center.x - attack_radius - jump_radius - 16.0 * _scale,
+			view.y - bottom - jump_radius)
+	widgets["attack"] = _make_widget(attack_center, attack_radius, "attack")
+	widgets["jump"] = _make_widget(jump_center, jump_radius, "jump")
+
+	# Dash: above and between the two main buttons.
+	var dash_radius := clampf(view.y * 0.052, 38.0, 46.0) * _scale
+	var dash_center := Vector2((attack_center.x + jump_center.x) * 0.5,
+			attack_center.y - attack_radius - dash_radius - 8.0 * _scale)
+	widgets["dash"] = _make_widget(dash_center, dash_radius, "dash")
+
+	# Skills: an arc above the attack/jump cluster, with cooldown arcs.
+	var skill_radius := clampf(view.y * 0.048, 36.0, 44.0) * _scale
+	var arc_center := Vector2((attack_center.x + jump_center.x) * 0.5,
+			dash_center.y - dash_radius - 6.0 * _scale)
+	var arc_radius := skill_radius * 2.6 + 16.0 * _scale
 	for slot in 3:
-		_widgets["skill_%d" % slot] = {
-			"center": Vector2(view.x - (330.0 + 78.0 * slot) * _scale, view.y - 44.0 * _scale),
-			"radius": 34.0 * _scale, "label": str(slot + 1), "slot": slot,
-		}
-	_widgets["pause"] = {"center": Vector2(view.x - 40.0, 40.0), "radius": 26.0}
+		var angle := PI + (slot + 1) * (PI / 4.0)
+		var center := arc_center + Vector2(cos(angle), sin(angle) * 0.9) * arc_radius
+		widgets["skill_%d" % slot] = _make_widget(center, skill_radius, "skill_%d" % (slot + 1))
+		widgets["skill_%d" % slot]["slot"] = slot
+
+	# Pause: top-right corner.
+	var pause_radius := clampf(view.y * 0.042, 26.0, 32.0) * _scale
+	widgets["pause"] = _make_widget(Vector2(view.x - right - pause_radius,
+			top + pause_radius), pause_radius, "pause")
 	queue_redraw()
+
+
+func _make_widget(center: Vector2, radius: float, action: String) -> Dictionary:
+	return {"center": center, "radius": radius, "action": action,
+			"rect": Rect2(center - Vector2(radius, radius), Vector2(radius * 2.0, radius * 2.0))}
+
+
+## Bounding rectangles in canvas coordinates, for layout assertions.
+func widget_rects() -> Dictionary:
+	var out := {}
+	for key: String in widgets.keys():
+		out[key] = widgets[key]["rect"]
+	return out
 
 
 func _widget_at(point: Vector2) -> String:
 	# small widgets first, the stick last (it is the largest target)
 	var keys := ["pause", "skill_0", "skill_1", "skill_2", "dash", "jump", "attack", "stick"]
 	for key: String in keys:
-		var widget: Dictionary = _widgets.get(key, {})
+		var widget: Dictionary = widgets.get(key, {})
 		if widget.is_empty():
 			continue
-		if point.distance_to(widget["center"]) <= float(widget["radius"]):
+		if widget["rect"].has_point(point):
 			return key
 	return ""
 
@@ -100,6 +174,7 @@ func _begin_touch(index: int, position: Vector2) -> void:
 	_touches[index] = widget
 	if Settings.vibration:
 		Settings.vibrate(12, 0.25)
+	var action := str(widgets[widget].get("action", ""))
 	match widget:
 		"stick":
 			_stick_index = index
@@ -108,19 +183,8 @@ func _begin_touch(index: int, position: Vector2) -> void:
 			_apply_stick(Vector2.ZERO)
 		"pause":
 			pause_requested.emit()
-		"jump":
-			if player != null:
-				player.press_jump()
-		"attack":
-			if player != null:
-				player.press_attack()
-		"dash":
-			if player != null:
-				player.press_dash()
 		_:
-			if widget.begins_with("skill_") and player != null:
-				var slot := int(widget.split("_")[1])
-				player.press_skill(slot)
+			Input.action_press(action)
 	queue_redraw()
 
 
@@ -151,6 +215,8 @@ func _apply_stick(vector: Vector2) -> void:
 func _end_touch(index: int) -> void:
 	var widget := str(_touches.get(index, ""))
 	_touches.erase(index)
+	if widget != "" and widget != "stick" and widget != "pause":
+		Input.action_release(str(widgets[widget].get("action", "")))
 	if index == _stick_index:
 		_stick_index = -1
 		_stick_vector = Vector2.ZERO
@@ -177,52 +243,103 @@ func _draw() -> void:
 	if _font == null:
 		return
 	var alpha := _opacity
-	# stick
-	var stick: Dictionary = _widgets.get("stick", {})
+	var stick: Dictionary = widgets.get("stick", {})
 	if not stick.is_empty():
-		var center: Vector2 = stick["center"]
-		var radius: float = stick["radius"]
-		draw_circle(center, radius, Color(0.16, 0.18, 0.3, 0.35 * alpha))
-		draw_arc(center, radius, 0.0, TAU, 48, Color(0.7, 0.8, 1.0, 0.5 * alpha), 2.0)
-		var knob := center + _stick_vector * radius * 0.62
-		draw_circle(knob, radius * 0.42, Color(0.82, 0.88, 1.0, 0.65 * alpha))
-	for key: String in _widgets.keys():
+		_draw_stick(stick, alpha)
+	for key: String in widgets.keys():
 		if key == "stick":
 			continue
-		var widget: Dictionary = _widgets[key]
+		var widget: Dictionary = widgets[key]
 		var center: Vector2 = widget["center"]
 		var radius: float = widget["radius"]
-		var base := Color(0.2, 0.24, 0.42, 0.45 * alpha)
 		var pressed := _touches.values().has(key)
+		var base := Color(0.2, 0.24, 0.42, 0.45 * alpha)
 		if pressed:
 			base = Color(0.45, 0.55, 0.85, 0.6 * alpha)
 		draw_circle(center, radius, base)
 		draw_arc(center, radius, 0.0, TAU, 40, Color(0.75, 0.82, 1.0, 0.55 * alpha), 2.0)
-		if key == "pause":
-			draw_rect(Rect2(center + Vector2(-7, -9), Vector2(4, 18)), Color(1, 1, 1, 0.85))
-			draw_rect(Rect2(center + Vector2(3, -9), Vector2(4, 18)), Color(1, 1, 1, 0.85))
-			continue
-		if key.begins_with("skill_"):
-			var slot: int = int(widget.get("slot", 0))
-			_draw_skill(center, radius, slot, alpha)
-			continue
-		var label := str(widget.get("label", ""))
-		draw_string(_font, center + Vector2(-radius * 0.4, 6.0), label,
-				HORIZONTAL_ALIGNMENT_LEFT, -1, int(22 * _scale), Color(1, 1, 1, 0.9))
+		match key:
+			"pause":
+				_draw_pause_icon(center, radius)
+			"attack":
+				_draw_sword_icon(center, radius)
+			"jump":
+				_draw_jump_icon(center, radius)
+			"dash":
+				_draw_dash_icon(center, radius)
+			_:
+				if key.begins_with("skill_"):
+					_draw_skill(center, radius, int(widget.get("slot", 0)), alpha)
+
+
+func _draw_stick(stick: Dictionary, alpha: float) -> void:
+	var center: Vector2 = stick["center"]
+	var radius: float = stick["radius"]
+	draw_circle(center, radius, Color(0.16, 0.18, 0.3, 0.35 * alpha))
+	draw_arc(center, radius, 0.0, TAU, 48, Color(0.7, 0.8, 1.0, 0.5 * alpha), 2.0)
+	var knob := center + _stick_vector * radius * 0.62
+	draw_circle(knob, radius * 0.42, Color(0.82, 0.88, 1.0, 0.65 * alpha))
+
+
+func _draw_pause_icon(center: Vector2, radius: float) -> void:
+	var w := radius * 0.28
+	var h := radius * 0.7
+	var color := Color(1, 1, 1, 0.9)
+	draw_rect(Rect2(center + Vector2(-radius * 0.38, -h * 0.5), Vector2(w, h)), color)
+	draw_rect(Rect2(center + Vector2(radius * 0.38 - w, -h * 0.5), Vector2(w, h)), color)
+
+
+func _draw_sword_icon(center: Vector2, radius: float) -> void:
+	var color := Color(1.0, 0.95, 0.8, 0.95)
+	var tip := center + Vector2(radius * 0.55, -radius * 0.55)
+	var base := center + Vector2(-radius * 0.45, radius * 0.45)
+	draw_line(tip, base, color, maxf(3.0, radius * 0.22))
+	draw_line(center + Vector2(-radius * 0.5, radius * 0.1),
+			center + Vector2(radius * 0.1, radius * 0.7), color, maxf(2.0, radius * 0.14))
+	draw_line(center + Vector2(radius * 0.25, radius * 0.15),
+			center + Vector2(radius * 0.25, radius * 0.85), Color(0.55, 0.4, 0.2, 0.95), maxf(3.0, radius * 0.18))
+
+
+func _draw_jump_icon(center: Vector2, radius: float) -> void:
+	var color := Color(1, 1, 1, 0.95)
+	var y0 := center.y + radius * 0.45
+	var y1 := center.y - radius * 0.45
+	draw_line(Vector2(center.x, y1), Vector2(center.x, y0), color, maxf(3.0, radius * 0.2))
+	draw_line(Vector2(center.x - radius * 0.4, y1 + radius * 0.4),
+			Vector2(center.x, y1), color, maxf(3.0, radius * 0.2))
+	draw_line(Vector2(center.x + radius * 0.4, y1 + radius * 0.4),
+			Vector2(center.x, y1), color, maxf(3.0, radius * 0.2))
+
+
+func _draw_dash_icon(center: Vector2, radius: float) -> void:
+	var color := Color(0.85, 0.95, 1.0, 0.95)
+	var dx := radius * 0.5
+	var dy := radius * 0.4
+	draw_line(center + Vector2(-dx, -dy), center + Vector2(0, 0), color, maxf(3.0, radius * 0.18))
+	draw_line(center + Vector2(-dx, dy), center + Vector2(0, 0), color, maxf(3.0, radius * 0.18))
+	draw_line(center + Vector2(0, 0), center + Vector2(dx, -dy), color, maxf(3.0, radius * 0.18))
+	draw_line(center + Vector2(0, 0), center + Vector2(dx, dy), color, maxf(3.0, radius * 0.18))
 
 
 func _draw_skill(center: Vector2, radius: float, slot: int, alpha: float) -> void:
 	var ratio := 0.0
-	var label := str(slot + 1)
+	var active := false
 	if player != null and player.has_method("skill_manager"):
 		var manager = player.skill_manager()
 		if manager != null:
 			ratio = float(manager.cooldown_ratio(slot))
-			var skill_name: String = str(manager.skill_id(slot))
-			if skill_name == "":
-				label = "-"
+			active = str(manager.skill_id(slot)) != ""
 	if ratio > 0.0:
 		draw_arc(center, radius * 0.85, -PI / 2.0, -PI / 2.0 + TAU * (1.0 - ratio), 32,
 				Color(1.0, 0.85, 0.4, 0.8 * alpha), 4.0)
-	draw_string(_font, center + Vector2(-6, 7), label, HORIZONTAL_ALIGNMENT_LEFT, -1,
-			int(20 * _scale), Color(1, 1, 1, 0.9))
+	# A small four-pointed "dream spark" glyph stands in for each skill.
+	var color := Color(1.0, 0.95, 0.7, 0.6 * alpha)
+	if active:
+		color = Color(1.0, 0.95, 0.7, 0.95 * alpha)
+	var r := radius * 0.45
+	draw_line(center + Vector2(-r, 0), center + Vector2(r, 0), color, maxf(2.0, radius * 0.16))
+	draw_line(center + Vector2(0, -r), center + Vector2(0, r), color, maxf(2.0, radius * 0.16))
+	draw_line(center + Vector2(-r * 0.5, -r * 0.5),
+			center + Vector2(r * 0.5, r * 0.5), color, maxf(2.0, radius * 0.14))
+	draw_line(center + Vector2(-r * 0.5, r * 0.5),
+			center + Vector2(r * 0.5, -r * 0.5), color, maxf(2.0, radius * 0.14))

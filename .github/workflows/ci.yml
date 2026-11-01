@@ -165,6 +165,52 @@ jobs:
           fi
           exit $STATUS
 
+  screenshots:
+    name: Rendered screenshots
+    runs-on: ubuntu-24.04
+    needs: data-and-audio
+    container:
+      image: barichello/godot-ci:4.5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Godot paths
+        run: |
+          mkdir -v -p ~/.local/share/godot/export_templates/
+          mkdir -v -p ~/.config/
+          if [ -d /root/.config/godot ]; then mv /root/.config/godot ~/.config/godot; fi
+          if [ -d "/root/.local/share/godot/export_templates/${GODOT_VERSION}.stable" ]; then
+            mv "/root/.local/share/godot/export_templates/${GODOT_VERSION}.stable" ~/.local/share/godot/export_templates/
+          fi
+      - name: Install a virtual display and software GL
+        run: |
+          apt-get update -qq
+          apt-get install -y -qq xvfb libgl1-mesa-dri libglx-mesa0 mesa-utils >/dev/null || true
+      - name: Import project
+        run: bash tools/import_project.sh
+      - name: Render screenshots
+        run: |
+          mkdir -p build/shots
+          set +e
+          xvfb-run -a -s "-screen 0 2560x1440x24" godot --audio-driver Dummy \
+            --rendering-driver opengl3 -s tools/screenshot.gd -- --out=build/shots > shots.log 2>&1
+          STATUS=$?
+          set -e
+          tail -n 60 shots.log
+          grep -nE "SCRIPT ERROR|Parse Error|ERROR:|failed to save" shots.log \
+            | head -10 | while IFS= read -r line; do echo "::error title=Screenshot::$line"; done
+          exit $STATUS
+      - name: Verify shots are not blank
+        run: |
+          pip install pillow -q
+          python tools/check_shots.py build/shots
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots
+          path: build/shots
+          retention-days: 14
+
   android-debug:
     name: Debug APK
     runs-on: ubuntu-24.04

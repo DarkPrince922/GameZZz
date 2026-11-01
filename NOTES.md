@@ -165,3 +165,37 @@ into the buffer start is what keeps it clean.
    packages for a non-Gradle APK export.
 5. `Input.vibrate_handheld(ms, amplitude)` two-argument form (used only on
    mobile builds).
+
+## Stage A — touch controls & HUD (2026-11-01)
+
+**Root cause of "buttons don't react / clipped at the bottom".**
+`HUD`, `TouchControls`, `PauseMenu` and `VictoryScreen` were added as children of
+the `Level` **Node2D**, not a `CanvasLayer`. A `Control` under a `Node2D` lives in
+world space: it is transformed by the player's `Camera2D`, and its input rect is
+unreliable — touches never land in `_gui_input`. Fixed by putting all screen UI
+in a `CanvasLayer` (`level.gd._build_ui`), where anchors are relative to the
+viewport and unaffected by the camera.
+Source: `class_control.rst` — "anchors … relative to its parent control or the
+current viewport".
+
+**No Input Map existed.** `project.godot` had no `[input]` section, so keyboard
+actions (`jump`, `attack`, `move_left/right`, `skill_1..3`, `pause`, …) were
+undefined and `event.is_action_pressed("pause")` could never fire. Added the full
+`[input]` section (WASD + arrows + space + J/K/Q/E/R + Ctrl + Esc/P). Touch
+buttons now dispatch these actions via `Input.action_press/release`, so desktop
+and touch share the player's single `_read_keyboard()` code path.
+
+**Stretch settings were already correct** (`canvas_items` + `aspect=expand`,
+orientation 4 = sensor landscape). The bug was not the mode but that UI was
+drawn with `get_viewport_rect()` absolute pixel math while living in world space.
+Layout now uses `get_viewport().get_visible_rect().size` + the display safe area
+(`DisplayServer.get_display_safe_area()`), with a 24 px floor inset, and sizes
+each button off the screen height so 16:9 / 20:9 / 4:3 all fit.
+
+**Icons replace debug letters.** D/J/A were placeholder glyphs; the release HUD
+now draws vector icons (sword, up-arrow, dash chevrons, pause bars, heart,
+crystal, four-pointed skill spark) so no letter glyphs ship in the UI.
+
+**Screenshots in CI.** `tools/screenshot.gd` renders the menu + 5 levels at
+1920x1080 / 2376x1080 / 1600x1200 under `xvfb-run` with llvmpipe;
+`tools/check_shots.py` rejects blank frames (luminance stddev & colour count).

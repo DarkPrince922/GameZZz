@@ -138,3 +138,37 @@ just test noise. Each is fixed and covered by the green run above:
 
 Remaining manual step: create and push the `stage-6-done` tag (the tooling here
 can push branches, not tags); `ci.yml` then publishes the APK to that release.
+
+## Stage A — control & HUD fix (2026-11-01, v0.7.0)
+
+Priority above all other tasks per the operator's supplement. Scope: make the
+game playable on a 2376x1080 (20:9) phone, then beauty passes (stages B–E).
+
+**Fixed**
+- UI moved into a `CanvasLayer` (was under the `Level` Node2D → world-space,
+  clipped by the camera, touches never hit). Anchors now follow the viewport.
+- Added the missing `[input]` Input Map (WASD/arrows/space/J/K/Q/E/R/Ctrl/Esc/P).
+- Touch buttons dispatch real actions; stick stays analog; per-finger multitouch
+  with release-reset.
+- Safe-area insets (notch/gesture bar) with a 24 px floor; sizes scale off
+  screen height; 64 px minimum button diameter.
+- Vector icons (sword / jump / dash / pause / heart / crystal / skill spark)
+  instead of D/J/A debug letters; health label "ЗД 100%" removed (icon + bar).
+- Shard counter moved left of pause (no overlap).
+- New tests: `tests/unit/test_touch_controls.gd` (press/release per button,
+  analog stick, multitouch, layout bounds + no-overlap across 6 resolutions).
+- CI screenshots job (xvfb + llvmpipe) + `tools/screenshot.gd` +
+  `tools/check_shots.py` (blank-frame rejection).
+
+**Local checks run:** `gdlint` (clean), `tools/check_refs.py` (243 refs OK).
+
+**Please verify on the phone (separate APK built first):**
+1. Every button responds to a tap (attack, jump, dash, 3 skills, pause) and the
+   stick moves the hero.
+2. All buttons are fully on screen — nothing clipped at the bottom/edges.
+3. Multitouch: hold the stick + tap jump + tap attack at the same time.
+4. Releasing a finger never leaves the hero running/jumping.
+5. Health shows a heart icon + bar (no "ЗД"), shards show a crystal icon + number.
+
+**Remaining (backlog, next stages):** B fonts/theme, C backgrounds/light, D art/
+animation/game-feel, E menu polish — see BACKLOG.md and the supplement.

@@ -34,6 +34,7 @@ var victory
 var boss
 var _finished: bool = false
 var _geometry: Node2D
+var _ui_layer: CanvasLayer
 
 
 func _ready() -> void:
@@ -273,12 +274,18 @@ func _spawn_boss() -> void:
 
 
 func _build_ui() -> void:
+	# All screen-space UI lives in a CanvasLayer so it is anchored to the
+	# viewport and unaffected by the player's camera or the world transform.
+	_ui_layer = CanvasLayer.new()
+	_ui_layer.name = "UILayer"
+	_ui_layer.layer = 10
+	add_child(_ui_layer)
 	hud = Hud.new()
 	hud.name = "HUD"
-	add_child(hud)
+	_ui_layer.add_child(hud)
 	controls = TouchControls.new()
 	controls.name = "TouchControls"
-	add_child(controls)
+	_ui_layer.add_child(controls)
 	controls.bind_player(player)
 	hud.bind_player(player)
 	controls.pause_requested.connect(_open_pause)
@@ -286,7 +293,7 @@ func _build_ui() -> void:
 		hud.bind_boss(boss)
 	pause_menu = PauseMenu.new()
 	pause_menu.name = "PauseMenu"
-	add_child(pause_menu)
+	_ui_layer.add_child(pause_menu)
 	pause_menu.hide()
 	pause_menu.resume_requested.connect(_close_pause)
 	pause_menu.menu_requested.connect(_go_menu)
@@ -383,7 +390,7 @@ func _finish(cleared: bool) -> void:
 		AudioManager.play("ui_achievement")
 	victory = VictoryScreen.new()
 	victory.name = "Victory"
-	add_child(victory)
+	_ui_layer.add_child(victory)
 	victory.setup({
 		"level_id": level_id,
 		"stars": stars,
