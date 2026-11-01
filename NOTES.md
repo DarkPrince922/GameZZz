@@ -4,6 +4,11 @@ Problem → solution → source. Written so we never debug the same thing twice.
 
 ## Godot 4.5 / Android
 
+**A non-empty `gradle_build/min_sdk` requires `use_gradle_build=true`.**
+Godot 4.5 refuses to export with `Cannot export project ... "Min SDK" can only be
+overridden when "Use Gradle Build" is enabled`. The preset therefore leaves
+`gradle_build/min_sdk` empty and relies on the template default.
+
 **minSdk 24 without a Gradle build.**
 `gradle_build/use_gradle_build=false` uses the prebuilt 4.5 template, whose
 `minSdk` already is 24 — exactly what the spec asks for.
