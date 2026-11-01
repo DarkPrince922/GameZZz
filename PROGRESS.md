@@ -9,7 +9,13 @@ jump feasibility, entity-on-ground rule); `tools/validate_audio.py` → OK
 (243 `res://` references resolve); music seam check ≤0.015 amplitude; an
 independent static review pass fixed 7 compile-level bugs (see `NOTES.md`).
 
-**CI link:** none — no GitHub remote or token was available in this environment,
+**CI:** green — https://github.com/DarkPrince922/GameZZz/actions/runs/41260050271
+(commit c920d54, run #25): GDScript lint, data/audio/reference checks, GUT
+(10 suites), scene smoke test, bot playthrough of all four world-1 levels + boss
+1, and the debug APK build with ABI/size verification.
+APK artifact: Actions → run #25 → `nightmare-hunter-debug-apk`.
+
+**CI link (legacy note):** none — no GitHub remote or token was available in this environment,
 so `gh run watch` never ran. See `BLOCKERS.md`. Everything below was verified
 locally with the tools that exist here (gdtoolkit lint, the Python validators,
 audio analysis); Godot itself was not available, so GUT, smoke and bot runs are
@@ -78,8 +84,9 @@ audio analysis); Godot itself was not available, so GUT, smoke and bot runs are
 - Tests: `test_data_content.gd` (unique sounds, cooldowns, data completeness).
 
 ### What to check on a phone (stages 1, 4, 6 together, since they shipped in one run)
-Not yet possible: there is no APK, because CI never ran. When the first build
-appears, listen for:
+The APK exists now (CI run #25 artifact). Install with
+`adb install -r nightmare-hunter-debug.apk` on an arm64 Android 7.0+ device.
+Listen for:
 1. **Hero loop** — are footsteps too loud/too frequent at run speed? Four
    variants and ±10 % pitch are in place, but the interval (0.28 s) is a guess.
 2. **Combat** — swing, hit, miss and crit should be clearly distinguishable;
@@ -98,3 +105,36 @@ Worlds 2–8, secret bosses, credits sequence, skill tree, gear, game modes
 (boss rush, survival, daily), achievements screen, bestiary screen, hero skins,
 tutorial in level 1, particles/screen-shake pass, 60 FPS profiling, APK size
 budget tuning, tilemap-based level authoring, signed release run.
+
+
+## Bugs found and fixed while getting CI green (2026-11-01)
+
+CI was the first real execution of this code, so it turned up real defects, not
+just test noise. Each is fixed and covered by the green run above:
+
+1. `Theme` used as a constant name shadowed Godot's native `Theme` class → every
+   UI script failed to parse and `level.gd` failed to compile.
+2. `push_warning()` counts as an engine error for GUT, so defensive warnings
+   (unknown sound id, corrupt save, unknown enemy type) failed tests; they now
+   print an explicit `WARNING:` line instead.
+3. Autoloads were touched before nodes entered the tree (`configure()` before
+   `add_child`), producing "Can't use get_node() with absolute paths".
+4. `godot -s` scripts compile before autoloads exist as globals, so the smoke
+   and bot runners must resolve them via `root.get_node(...)`.
+5. Elite `hp_mult` was defined in data but never applied.
+6. Weapon damage multiplier defaulted to 0 → a hit could deal zero damage.
+7. The ultimate skill's slow never expired (`slow_timer` was not set).
+8. Collectible counting mixed currency and stars, so "collect everything" was
+   free and the victory screen could show `x > y`.
+9. Boss arenas had a goal door, letting the player "finish" the boss level
+   without killing the boss.
+10. **Pits were not lethal**: with no floor, the hero fell forever at terminal
+    velocity. The level now detects the drop, kills and respawns at the last
+    checkpoint — the single most serious gameplay bug found by CI.
+11. Android export refused `gradle_build/min_sdk="24"` with a non-Gradle build;
+    the override is gone and the 4.5 template supplies minSdk 24.
+12. The scripted bot jumped on step-downs (landing inside the next pit), counted
+    one death per frame, and stopped short of the boss's melee reach.
+
+Remaining manual step: create and push the `stage-6-done` tag (the tooling here
+can push branches, not tags); `ci.yml` then publishes the APK to that release.

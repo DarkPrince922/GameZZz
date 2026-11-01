@@ -1,5 +1,9 @@
 # BLOCKERS
 
+> **RESOLVED 2026-11-01.** The repository was pushed and CI ran; run #25 is green
+> (lint, data/audio, GUT, smoke, bot playthrough, debug APK). The entries below
+> are kept as a record of what the environment could not do at the time.
+
 ## 1. No GitHub repository, remote or token — CI has never run (blocking stage sign-off)
 
 **What the spec asks:** push `stage-N`, let GitHub Actions run lint/GUT/smoke/
