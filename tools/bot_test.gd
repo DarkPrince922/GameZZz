@@ -75,6 +75,7 @@ func _run_level(level_id: String) -> void:
 	var safe_x: float = player.position.x
 	var safe_y: float = player.position.y
 	var trace: Array = []
+	var was_dead := false
 	while frames < max_frames:
 		player.set_move_axis(1.0)
 		if player.is_on_floor():
@@ -107,16 +108,19 @@ func _run_level(level_id: String) -> void:
 			player.press_attack()
 		if frames % 150 == 0:
 			player.press_skill(1)
-		if player.is_dead():
+		if player.is_dead() and not was_dead:
+			was_dead = true
 			rescues += 1
-			print("[bot] %s died at frame %d (x %.0f), waiting for respawn" % [
+			print("[bot] %s died at frame %d (x %.0f), respawning" % [
 				level_id, frames, player.position.x])
 			if rescues > MAX_RESCUES_PER_LEVEL:
 				_failures.append("%s: bot kept dying (%d deaths)" % [level_id, rescues])
 				level.queue_free()
 				await process_frame
 				return
-			# respawn resets the position; forget triggers behind the checkpoint
+			next_trigger = 0
+		elif not player.is_dead() and was_dead:
+			was_dead = false
 			next_trigger = 0
 		if player.position.y > float(int(level.level_data.get("height", 14)) * 32 + 600):
 			# The scripted bot is a traversal check, not a skill demo: a moving
@@ -194,7 +198,9 @@ func _jump_triggers(columns: Array, tile: int) -> Array:
 	var previous := int(columns[0])
 	for col in range(1, columns.size()):
 		var current := int(columns[col])
-		var needs_jump := current <= 0 or (previous > 0 and current < previous)
+		var is_pit := current <= 0
+		var is_step_up := previous > 0 and current > 0 and current < previous
+		var needs_jump := is_pit or is_step_up
 		if needs_jump and previous > 0:
 			triggers.append(float((col - 1) * tile))
 		previous = current
