@@ -93,6 +93,9 @@ func _run_level(level_id: String) -> void:
 			level.queue_free()
 			await process_frame
 			return
+		if frames % 600 == 0:
+			print("[bot] %s progress frame=%d x=%.0f y=%.0f vel=%.0f" % [
+				level_id, frames, player.position.x, player.position.y, player.velocity.x])
 		if level.is_finished():
 			break
 		if absf(player.position.x - last_x) < 0.5:
@@ -150,6 +153,9 @@ func _run_boss(level_id: String) -> void:
 			player.press_skill(0)
 		if frames % 300 == 0:
 			player.press_skill(1)
+		if frames % 600 == 0:
+			print("[bot] %s boss frame=%d hp=%.0f dx=%.0f px=%.0f bx=%.0f" % [
+				level_id, frames, boss.hp, dx, player.position.x, boss.global_position.x])
 		if boss.is_dead:
 			break
 		await physics_frame
