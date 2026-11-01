@@ -1,7 +1,8 @@
 extends GutTest
-## Touch controls: button presses dispatch the right action and release clears
-## it, the stick is analog, multitouch keeps independent fingers, and the layout
-## stays inside the safe area without overlaps on 16:9 / 20:9 / 4:3 screens.
+## Touch controls: buttons call the player's edge-triggered press methods, the
+## stick is analog and resets on release, multitouch keeps independent fingers,
+## and the layout stays inside the safe area without overlaps on 16:9 / 20:9 /
+## 4:3 screens.
 
 const TouchControlsScript := preload("res://scripts/ui/touch_controls.gd")
 
@@ -14,6 +15,10 @@ class MockPlayer:
 	var move_axis: float = 0.0
 	var move_vertical: float = 0.0
 	var crouch: bool = false
+	var jumps: int = 0
+	var attacks: int = 0
+	var dashes: int = 0
+	var skills: Array = []
 
 	func set_move_axis(v: float) -> void:
 		move_axis = v
@@ -23,6 +28,18 @@ class MockPlayer:
 
 	func set_crouch(v: bool) -> void:
 		crouch = v
+
+	func press_jump() -> void:
+		jumps += 1
+
+	func press_attack() -> void:
+		attacks += 1
+
+	func press_dash() -> void:
+		dashes += 1
+
+	func press_skill(slot: int) -> void:
+		skills.append(slot)
 
 	func skill_manager() -> Node:
 		return null
@@ -37,12 +54,6 @@ func before_each() -> void:
 	_controls.layout_for(Vector2(1280, 720))
 
 
-func after_each() -> void:
-	# clear any stuck actions left by a failing test
-	for action in ["jump", "attack", "dash", "skill_1", "skill_2", "skill_3"]:
-		Input.action_release(action)
-
-
 func _touch(widget: String, pressed: bool) -> void:
 	var center: Vector2 = _controls.widgets[widget]["center"]
 	var ev := InputEventScreenTouch.new()
@@ -52,35 +63,35 @@ func _touch(widget: String, pressed: bool) -> void:
 	_controls._gui_input(ev)
 
 
-func test_jump_button_presses_and_releases_action() -> void:
+func test_jump_button_calls_player_jump() -> void:
 	_touch("jump", true)
-	assert_true(Input.is_action_pressed("jump"), "touching the jump button must press the jump action")
+	assert_eq(_mock.jumps, 1, "touching the jump button must call press_jump once")
 	_touch("jump", false)
-	assert_false(Input.is_action_pressed("jump"), "releasing must clear the jump action")
+	assert_eq(_mock.jumps, 1, "releasing the jump button must not re-trigger it")
 
 
-func test_attack_button_presses_action() -> void:
+func test_attack_button_calls_player_attack() -> void:
 	_touch("attack", true)
-	assert_true(Input.is_action_pressed("attack"), "attack button must press the attack action")
+	assert_eq(_mock.attacks, 1, "touching the attack button must call press_attack once")
 	_touch("attack", false)
-	assert_false(Input.is_action_pressed("attack"))
+	assert_eq(_mock.attacks, 1, "releasing the attack button must not re-trigger it")
 
 
-func test_dash_button_presses_action() -> void:
+func test_dash_button_calls_player_dash() -> void:
 	_touch("dash", true)
-	assert_true(Input.is_action_pressed("dash"), "dash button must press the dash action")
+	assert_eq(_mock.dashes, 1, "touching the dash button must call press_dash once")
 	_touch("dash", false)
-	assert_false(Input.is_action_pressed("dash"))
+	assert_eq(_mock.dashes, 1, "releasing the dash button must not re-trigger it")
 
 
-func test_each_skill_button_presses_its_action() -> void:
+func test_each_skill_button_calls_player_skill() -> void:
 	for slot in 3:
 		var key := "skill_%d" % slot
 		_touch(key, true)
-		assert_true(Input.is_action_pressed("skill_%d" % (slot + 1)),
-				"%s must press skill_%d" % [key, slot + 1])
+		assert_eq(_mock.skills.size(), slot + 1, "%s must call press_skill once" % key)
+		assert_eq(_mock.skills[slot], slot, "%s must pass the right slot" % key)
 		_touch(key, false)
-		assert_false(Input.is_action_pressed("skill_%d" % (slot + 1)))
+		assert_eq(_mock.skills.size(), slot + 1, "releasing %s must not re-trigger it" % key)
 
 
 func test_stick_is_analog_and_resets_on_release() -> void:
@@ -131,8 +142,8 @@ func test_multitouch_stick_and_two_buttons() -> void:
 	_controls._gui_input(s2)
 
 	assert_eq(_controls.active_touch_count(), 3, "three fingers must be tracked at once")
-	assert_true(Input.is_action_pressed("jump"), "jump must be held while its finger is down")
-	assert_true(Input.is_action_pressed("attack"), "attack must be held while its finger is down")
+	assert_eq(_mock.jumps, 1, "jump must fire once while its finger is down")
+	assert_eq(_mock.attacks, 1, "attack must fire once while its finger is down")
 
 	# lift only the jump finger; attack and the stick must remain active
 	var r1 := InputEventScreenTouch.new()
@@ -140,21 +151,25 @@ func test_multitouch_stick_and_two_buttons() -> void:
 	r1.position = jump_center
 	r1.pressed = false
 	_controls._gui_input(r1)
-	assert_false(Input.is_action_pressed("jump"), "lifting jump must clear only jump")
-	assert_true(Input.is_action_pressed("attack"), "attack must survive jump's release")
+	assert_eq(_mock.jumps, 1, "lifting jump must not re-trigger jump")
+	assert_eq(_mock.attacks, 1, "attack must survive jump's release")
 	assert_eq(_controls.active_touch_count(), 2)
 
 
 func test_release_resets_every_button() -> void:
 	for key in ["jump", "attack", "dash", "skill_0", "skill_1", "skill_2"]:
 		_touch(key, true)
-	_touch("jump", false)
-	_touch("attack", false)
-	_touch("dash", false)
-	_touch("skill_0", false)
-	_touch("skill_1", false)
-	_touch("skill_2", false)
+	var jumps_after := _mock.jumps
+	var attacks_after := _mock.attacks
+	var dashes_after := _mock.dashes
+	var skills_after := _mock.skills.duplicate()
+	for key in ["jump", "attack", "dash", "skill_0", "skill_1", "skill_2"]:
+		_touch(key, false)
 	assert_eq(_controls.active_touch_count(), 0, "all fingers released")
+	assert_eq(_mock.jumps, jumps_after, "release must not re-trigger jump")
+	assert_eq(_mock.attacks, attacks_after, "release must not re-trigger attack")
+	assert_eq(_mock.dashes, dashes_after, "release must not re-trigger dash")
+	assert_eq_deep(_mock.skills, skills_after, "release must not re-trigger skills")
 
 
 func test_layout_all_resolutions_inside_safe_area() -> void:

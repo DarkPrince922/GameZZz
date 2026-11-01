@@ -9,9 +9,12 @@ extends Control
 ## the display safe area, so nothing is clipped on 20:9 or 4:3 screens. Button
 ## size and opacity come from Settings and apply immediately.
 ##
-## Buttons dispatch their Input Map action (jump/attack/dash/skill_1..3); the
-## player reads those same actions, so desktop and touch share one code path.
-## The stick is analog and drives the player directly.
+## Buttons call the player's press methods directly (press_jump / press_attack /
+## press_dash / press_skill), the same edge-triggered entry points the keyboard
+## path ends up in. This avoids `Input.action_press`, whose synthetic presses are
+## not seen by `Input.is_action_just_pressed` from a physics frame (the engine
+## only advances `pressed_physics_frame` for events parsed through
+## `Input.parse_input_event`). The stick is analog and drives the player directly.
 
 signal pause_requested()
 
@@ -174,7 +177,6 @@ func _begin_touch(index: int, position: Vector2) -> void:
 	_touches[index] = widget
 	if Settings.vibration:
 		Settings.vibrate(12, 0.25)
-	var action := str(widgets[widget].get("action", ""))
 	match widget:
 		"stick":
 			_stick_index = index
@@ -183,8 +185,18 @@ func _begin_touch(index: int, position: Vector2) -> void:
 			_apply_stick(Vector2.ZERO)
 		"pause":
 			pause_requested.emit()
+		"jump":
+			if player != null:
+				player.press_jump()
+		"attack":
+			if player != null:
+				player.press_attack()
+		"dash":
+			if player != null:
+				player.press_dash()
 		_:
-			Input.action_press(action)
+			if widget.begins_with("skill_") and player != null:
+				player.press_skill(int(widgets[widget].get("slot", 0)))
 	queue_redraw()
 
 
@@ -213,10 +225,7 @@ func _apply_stick(vector: Vector2) -> void:
 
 
 func _end_touch(index: int) -> void:
-	var widget := str(_touches.get(index, ""))
 	_touches.erase(index)
-	if widget != "" and widget != "stick" and widget != "pause":
-		Input.action_release(str(widgets[widget].get("action", "")))
 	if index == _stick_index:
 		_stick_index = -1
 		_stick_vector = Vector2.ZERO
