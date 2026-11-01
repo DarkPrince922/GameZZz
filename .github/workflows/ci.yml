@@ -173,9 +173,6 @@ jobs:
       image: barichello/godot-ci:4.5
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
       - name: Setup Godot paths
         run: |
           mkdir -v -p ~/.local/share/godot/export_templates/
@@ -187,7 +184,7 @@ jobs:
       - name: Install a virtual display and software GL
         run: |
           apt-get update -qq
-          apt-get install -y -qq xvfb libgl1-mesa-dri libglx-mesa0 mesa-utils >/dev/null || true
+          apt-get install -y -qq xvfb libgl1-mesa-dri libglx-mesa0 mesa-utils python3-pil >/dev/null || true
       - name: Import project
         run: bash tools/import_project.sh
       - name: Render screenshots
@@ -203,9 +200,7 @@ jobs:
             | head -10 | while IFS= read -r line; do echo "::error title=Screenshot::$line"; done
           exit $STATUS
       - name: Verify shots are not blank
-        run: |
-          pip install pillow -q
-          python tools/check_shots.py build/shots
+        run: python3 tools/check_shots.py build/shots
       - name: Upload screenshots
         if: always()
         uses: actions/upload-artifact@v4
