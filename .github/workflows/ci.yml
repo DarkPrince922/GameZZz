@@ -190,15 +190,17 @@ jobs:
           godot --headless --verbose --export-debug "Android" build/nightmare-hunter-debug.apk \
             > export.log 2>&1
           STATUS=$?
-          set -e
-          tail -n 120 export.log
+          # keep diagnostics running even when the export failed
+          echo "---- export.log tail ----"
+          tail -n 60 export.log || true
+          echo "---- build dir ----"
+          ls -la build || true
           grep -nE "ERROR|error:|Cannot|cannot|missing|not found|Unsupported|Invalid|No export" export.log \
-            | head -10 | while IFS= read -r line; do echo "::error title=APK::$line"; done
-          BLOCK=$(tail -n 40 export.log | sed 's/%/%25/g' | paste -sd '|' - | sed 's/|/%0A/g')
+            | head -8 | while IFS= read -r line; do echo "::error title=APK::$line"; done || true
+          BLOCK=$(tail -n 25 export.log | sed 's/%/%25/g' | paste -sd '|' - | sed 's/|/%0A/g')
           if [ -n "$BLOCK" ]; then
             echo "::error title=APK-tail::$BLOCK"
           fi
-          ls -la build || true
           exit $STATUS
       - name: Verify APK
         run: |
