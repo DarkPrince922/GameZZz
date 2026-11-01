@@ -74,6 +74,7 @@ func _run_level(level_id: String) -> void:
 	var rescues := 0
 	var safe_x: float = player.position.x
 	var safe_y: float = player.position.y
+	var trace: Array = []
 	while frames < max_frames:
 		player.set_move_axis(1.0)
 		if player.is_on_floor():
@@ -109,6 +110,9 @@ func _run_level(level_id: String) -> void:
 			rescues += 1
 			print("[bot] %s rescue #%d at frame %d (x %.0f -> %.0f)" % [
 				level_id, rescues, frames, player.position.x, safe_x])
+			for line: String in trace:
+				print(line)
+			trace.clear()
 			if rescues > MAX_RESCUES_PER_LEVEL:
 				_failures.append("%s: bot kept falling (%d rescues)" % [level_id, rescues])
 				level.queue_free()
@@ -119,6 +123,13 @@ func _run_level(level_id: String) -> void:
 			await physics_frame
 			frames += 1
 			continue
+		if rescues > 0 or frames % 600 == 0:
+			trace.append("[trace] %s f=%d x=%.0f y=%.0f vy=%.0f state=%d floor=%s hp=%.0f ground=%d" % [
+				level_id, frames, player.position.x, player.position.y, player.velocity.y,
+				player.state, player.is_on_floor(), player.hp,
+				_ground_at(columns, player.position.x, tile)])
+			while trace.size() > 24:
+				trace.pop_front()
 		if frames % 600 == 0:
 			print("[bot] %s progress frame=%d x=%.0f y=%.0f vx=%.0f state=%d axis=%.1f floor=%s" % [
 				level_id, frames, player.position.x, player.position.y,
@@ -198,6 +209,13 @@ func _run_boss(level_id: String) -> void:
 			player.press_skill(0)
 		if frames % 300 == 0:
 			player.press_skill(1)
+		if rescues > 0 or frames % 600 == 0:
+			trace.append("[trace] %s f=%d x=%.0f y=%.0f vy=%.0f state=%d floor=%s hp=%.0f ground=%d" % [
+				level_id, frames, player.position.x, player.position.y, player.velocity.y,
+				player.state, player.is_on_floor(), player.hp,
+				_ground_at(columns, player.position.x, tile)])
+			while trace.size() > 24:
+				trace.pop_front()
 		if frames % 600 == 0:
 			print("[bot] %s boss frame=%d hp=%.0f dx=%.0f px=%.0f bx=%.0f" % [
 				level_id, frames, boss.hp, dx, player.position.x, boss.global_position.x])
