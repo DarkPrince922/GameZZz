@@ -209,13 +209,6 @@ func _run_boss(level_id: String) -> void:
 			player.press_skill(0)
 		if frames % 300 == 0:
 			player.press_skill(1)
-		if rescues > 0 or frames % 600 == 0:
-			trace.append("[trace] %s f=%d x=%.0f y=%.0f vy=%.0f state=%d floor=%s hp=%.0f ground=%d" % [
-				level_id, frames, player.position.x, player.position.y, player.velocity.y,
-				player.state, player.is_on_floor(), player.hp,
-				_ground_at(columns, player.position.x, tile)])
-			while trace.size() > 24:
-				trace.pop_front()
 		if frames % 600 == 0:
 			print("[bot] %s boss frame=%d hp=%.0f dx=%.0f px=%.0f bx=%.0f" % [
 				level_id, frames, boss.hp, dx, player.position.x, boss.global_position.x])
