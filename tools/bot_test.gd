@@ -63,10 +63,13 @@ func _run_level(level_id: String) -> void:
 	paused = false
 	var columns := _ground_columns(level)
 	var tile := int(level.level_data.get("tile_size", 32))
+	var triggers := _jump_triggers(columns, tile)
+	var next_trigger := 0
 	var frames := 0
 	var max_frames := MAX_SECONDS_PER_LEVEL * PHYSICS_FPS
 	var stuck_frames := 0
 	var last_x: float = player.position.x
+	var jumps := 0
 	while frames < max_frames:
 		player.set_move_axis(1.0)
 		if player.is_on_floor():
@@ -74,24 +77,26 @@ func _run_level(level_id: String) -> void:
 				stuck_frames += 1
 				if stuck_frames > 6:
 					player.press_jump()
+					jumps += 1
 					stuck_frames = 0
 			else:
 				stuck_frames = 0
-			# jump before a pit or a step-up, otherwise hop periodically
-			var probe_x: float = player.position.x + float(tile) * 1.8
-			if _ground_at(columns, probe_x, tile) <= 0:
+			# Deterministic hops: one scheduled jump per pit edge / step up,
+			# taken as soon as the player reaches the trigger column.
+			while next_trigger < triggers.size() \
+					and player.position.x > float(triggers[next_trigger]) + float(tile) * 2.0:
+				next_trigger += 1
+			if next_trigger < triggers.size() and player.position.x >= float(triggers[next_trigger]):
 				player.press_jump()
-			elif _ground_at(columns, probe_x, tile) > _ground_at(columns, player.position.x, tile):
-				player.press_jump()
+				jumps += 1
+				next_trigger += 1
 		if frames % 10 == 0:
 			player.press_attack()
 		if frames % 150 == 0:
 			player.press_skill(1)
-		if frames % 45 == 0 and player.is_on_floor():
-			player.press_jump()
 		if player.position.y > float(int(level.level_data.get("height", 14)) * 32 + 600):
-			print("[bot] %s fell into a pit at frame %d (x %.0f y %.0f)" % [
-				level_id, frames, player.position.x, player.position.y])
+			print("[bot] %s fell into a pit at frame %d (x %.0f y %.0f jumps=%d)" % [
+				level_id, frames, player.position.x, player.position.y, jumps])
 			_failures.append("%s: bot fell out of the world" % level_id)
 			level.queue_free()
 			await process_frame
@@ -133,6 +138,23 @@ func _ground_at(columns: Array, x: float, tile: int) -> int:
 	if col < 0 or col >= columns.size():
 		return 0
 	return int(columns[col])
+
+
+func _jump_triggers(columns: Array, tile: int) -> Array:
+	## One x-position (pixels) per pit edge or step up, in ascending order.
+	## The bot presses jump the frame it reaches a trigger, so the takeoff point
+	## does not depend on frame rate or on how often the probe is sampled.
+	var triggers: Array = []
+	if columns.size() < 2:
+		return triggers
+	var previous := int(columns[0])
+	for col in range(1, columns.size()):
+		var current := int(columns[col])
+		var needs_jump := current <= 0 or (previous > 0 and current < previous)
+		if needs_jump and previous > 0:
+			triggers.append(float((col - 1) * tile))
+		previous = current
+	return triggers
 
 
 func _run_boss(level_id: String) -> void:
