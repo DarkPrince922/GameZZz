@@ -165,7 +165,7 @@ func test_layout_all_resolutions_inside_safe_area() -> void:
 	for view in resolutions:
 		_controls.layout_for(view)
 		var rects: Dictionary = _controls.widget_rects()
-		var margin := _controls.EDGE_PAD
+		var margin: float = _controls.EDGE_PAD
 		for key: String in rects.keys():
 			var r: Rect2 = rects[key]
 			assert_true(r.position.x >= margin - 0.5 and r.position.y >= margin - 0.5,
