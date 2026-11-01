@@ -412,6 +412,16 @@ func is_shielded() -> bool:
 	return shield_hp > 0.0
 
 
+func fall_into_pit() -> void:
+	## Called by the level when the hero drops out of the world. Without this
+	## the body keeps falling forever (no floor means no landing, no respawn).
+	if state == State.DEAD:
+		return
+	hp = 0.0
+	health_changed.emit(hp, max_hp)
+	_die()
+
+
 func _die() -> void:
 	state = State.DEAD
 	velocity = Vector2.ZERO

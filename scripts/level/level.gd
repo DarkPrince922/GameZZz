@@ -309,6 +309,14 @@ func _bind_events() -> void:
 
 
 # ------------------------------------------------------------------ events
+func _physics_process(_delta: float) -> void:
+	if player == null or not is_instance_valid(player) or _finished:
+		return
+	var bottom := float(level_height * tile_size) + float(tile_size) * 3.0
+	if player.global_position.y > bottom:
+		player.fall_into_pit()
+
+
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("pause"):
 		if get_tree().paused:

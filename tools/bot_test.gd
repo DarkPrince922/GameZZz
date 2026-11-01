@@ -95,6 +95,10 @@ func _run_level(level_id: String) -> void:
 			while next_trigger < triggers.size() \
 					and player.position.x > float(triggers[next_trigger]) + float(tile) * 2.0:
 				next_trigger += 1
+			var back := next_trigger - 1
+			while back >= 0 and player.position.x < float(triggers[back]) + float(tile) * 2.0:
+				next_trigger = back
+				back -= 1
 			if next_trigger < triggers.size() and player.position.x >= float(triggers[next_trigger]):
 				player.press_jump()
 				jumps += 1
@@ -103,6 +107,17 @@ func _run_level(level_id: String) -> void:
 			player.press_attack()
 		if frames % 150 == 0:
 			player.press_skill(1)
+		if player.is_dead():
+			rescues += 1
+			print("[bot] %s died at frame %d (x %.0f), waiting for respawn" % [
+				level_id, frames, player.position.x])
+			if rescues > MAX_RESCUES_PER_LEVEL:
+				_failures.append("%s: bot kept dying (%d deaths)" % [level_id, rescues])
+				level.queue_free()
+				await process_frame
+				return
+			# respawn resets the position; forget triggers behind the checkpoint
+			next_trigger = 0
 		if player.position.y > float(int(level.level_data.get("height", 14)) * 32 + 600):
 			# The scripted bot is a traversal check, not a skill demo: a moving
 			# wall next to a pit can shove it in. Put it back on the last safe
