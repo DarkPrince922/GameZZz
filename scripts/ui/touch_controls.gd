@@ -121,8 +121,8 @@ func layout_for(view: Vector2) -> void:
 		widgets["skill_%d" % slot] = _make_widget(center, skill_radius, "skill_%d" % (slot + 1))
 		widgets["skill_%d" % slot]["slot"] = slot
 
-	# Pause: top-right corner.
-	var pause_radius := clampf(view.y * 0.042, 26.0, 32.0) * _scale
+	# Pause: top-right corner (>= 64px diameter like every other button).
+	var pause_radius := clampf(view.y * 0.042, 32.0, 40.0) * _scale
 	widgets["pause"] = _make_widget(Vector2(view.x - right - pause_radius,
 			top + pause_radius), pause_radius, "pause")
 	queue_redraw()
